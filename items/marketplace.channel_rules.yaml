@@ -1,0 +1,79 @@
+item_id: marketplace.channel_rules
+title: Multi-Channel Marketplace Integration Rules
+content: |
+  **Sales Channels:**
+
+  1. **Direct (our website):** Primary channel
+  2. **Amazon:** Marketplace integration
+  3. **eBay:** Auction + fixed-price listings
+  4. **Walmart Marketplace:** Invitation-only
+  5. **Instagram Shopping:** Social commerce
+
+  **Inventory Synchronization (CRITICAL):**
+
+  **Problem:** Sell same product on 5 channels → risk of overselling
+
+  **Solution: Real-Time Inventory Sync**
+
+  - **Single Source of Truth:** NomosAI inventory database
+  - **On every sale (any channel):**
+     1. Emit `InventoryReserved` event
+     2. Update central inventory count
+     3. Push updated count to ALL channels within 60 seconds
+
+  - **Buffer Stock (safety margin):**
+     - If physical qty = 10, list as "9 available" on marketplaces
+     - Reason: Prevents race conditions (2 channels selling last unit simultaneously)
+
+  **Channel-Specific Rules:**
+
+  **Amazon:**
+  - **Shipping SLA:** Must ship within 2 business days (or lose Buy Box)
+  - **Returns:** Amazon handles returns (30-day window, customer doesn't contact us)
+  - **Pricing:** Cannot list higher price on Amazon than on our website (price parity clause)
+
+  **eBay:**
+  - **Shipping SLA:** Must ship within handling time specified in listing (typically 3 days)
+  - **Returns:** eBay requires 30-day return policy minimum
+  - **Fees:** Final Value Fee = 12.9% of total sale (including shipping)
+
+  **Walmart Marketplace:**
+  - **Shipping SLA:** 2-day shipping required for most categories
+  - **Returns:** Walmart handles returns (customer ships to Walmart return center)
+  - **Product matching:** Walmart auto-matches SKU to their catalog (can cause issues if mismatch)
+
+  **Order Routing Logic:**
+
+  When order received from marketplace:
+  1. Create internal order with source channel tagged
+  2. Deduct inventory from central pool
+  3. Route to fulfillment warehouse (closest to customer)
+  4. Update tracking number back to marketplace API
+  5. Marketplace notifies customer (we DON'T send duplicate email)
+
+  **Channel-Specific Pricing:**
+  - **Direct website:** Base price $100
+  - **Amazon:** $105 (to offset 15% marketplace fee)
+  - **eBay:** $108 (to offset 12.9% fee + PayPal fee)
+  - **Rule:** Final customer price should yield same net profit across channels
+
+  **Cannibalization Prevention:**
+  - Some products sold ONLY on direct website (exclusive items)
+  - New product launches: Direct website first, then marketplaces after 30 days
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "channel": "enum: DIRECT | AMAZON | EBAY | WALMART | INSTAGRAM",
+    "channelOrderId": "string (marketplace's order ID)",
+    "channelFee": "number (cents, marketplace commission)",
+    "syncedAt": "ISO8601",
+    "trackingNumberSyncStatus": "enum: PENDING | SYNCED | FAILED"
+  }
+  ```
+labels:
+  - multi_channel
+  - marketplace
+  - integration
+  - domain_definition

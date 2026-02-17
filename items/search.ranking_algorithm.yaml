@@ -1,0 +1,93 @@
+item_id: search.ranking_algorithm
+title: Product Search Ranking Algorithm
+content: |
+  **Search Ranking Factors (weighted):**
+
+  **1. Text Relevance (40% weight):**
+  - Exact match in product title: +100 points
+  - Partial match in title: +50 points
+  - Match in description: +20 points
+  - Match in category: +10 points
+  - Use TF-IDF or BM25 for scoring
+
+  **2. Popularity (30% weight):**
+  - Sales volume (past 30 days): 1 sale = +1 point
+  - Click-through rate: CTR * 100 = points
+  - Conversion rate: CR * 100 = points
+
+  **3. Recency (10% weight):**
+  - New products (< 30 days old): +50 points
+  - Recently restocked (< 7 days): +20 points
+  - Trending (sales spike >2x average): +30 points
+
+  **4. Availability (10% weight):**
+  - In stock: +50 points
+  - Low stock (< 5 units): +25 points (urgency signal)
+  - Out of stock: 0 points (exclude from results OR show at bottom with "Notify Me")
+
+  **5. Price (5% weight):**
+  - Competitive pricing (within 10% of category avg): +10 points
+  - Premium pricing (>50% above avg): -10 points (customer may filter out)
+
+  **6. Reviews (5% weight):**
+  - Average rating: (avg_rating - 3) * 20 = points
+     - Example: 4.5 stars → (4.5 - 3) * 20 = 30 points
+  - Number of reviews: min(review_count, 100) = points
+
+  **Final Score Calculation:**
+  ```
+  score = (textRelevance * 0.4) + (popularity * 0.3) + (recency * 0.1) +
+          (availability * 0.1) + (price * 0.05) + (reviews * 0.05)
+  ```
+
+  **Personalization Layer (after initial ranking):**
+
+  - **User's purchase history:** Boost products in categories they've bought before (+20%)
+  - **Cart affinity:** Boost products frequently bought together with items in cart (+15%)
+  - **Abandoned cart:** Boost products user previously added but didn't buy (+10%)
+
+  **Search Query Corrections:**
+
+  - **Typo correction:** "iphone" → "iPhone" (fuzzy matching, Levenshtein distance ≤ 2)
+  - **Synonym expansion:** "sneakers" → include results for "shoes", "trainers"
+  - **Stop words:** Ignore "the", "a", "an"
+
+  **Filtering (applied BEFORE ranking):**
+
+  - Price range: $0-$50, $50-$100, $100+
+  - Category: Electronics, Clothing, Home & Garden
+  - Brand: Apple, Samsung, Sony
+  - Availability: In stock only, Include out of stock
+  - Rating: 4+ stars, 3+ stars
+
+  **Pagination:**
+  - Default: 24 products per page
+  - "Load more" (infinite scroll) OR numbered pages (user preference)
+
+  **Event Payload (for analytics):**
+  ```json
+  {
+    "searchId": "UUID",
+    "query": "string",
+    "correctedQuery": "string (if typo corrected)",
+    "filters": {
+      "priceMin": "number",
+      "priceMax": "number",
+      "category": "string",
+      "inStockOnly": "boolean"
+    },
+    "resultsCount": "number",
+    "clickedProducts": [
+      {
+        "productId": "UUID",
+        "rank": "number (position in search results)"
+      }
+    ]
+  }
+  ```
+labels:
+  - search
+  - ranking
+  - recommendations
+  - product_discovery
+  - domain_definition

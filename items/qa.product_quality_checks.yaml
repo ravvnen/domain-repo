@@ -1,0 +1,90 @@
+item_id: qa.product_quality_checks
+title: Product Quality Assurance Checks
+content: |
+  **QA Checkpoints (Before Shipping):**
+
+  **1. Receiving Inspection (when supplier delivers to warehouse):**
+  - **Sample size:** 10% of shipment (or 100 units, whichever is smaller)
+  - **Checks:**
+     - Physical damage (dents, scratches)
+     - Quantity accuracy (did supplier send correct amount?)
+     - SKU correctness (is this the right product?)
+  - **Acceptance criteria:**
+     - Defect rate ≤2% → accept shipment
+     - Defect rate 2-5% → partial accept (deduct defective units from invoice)
+     - Defect rate >5% → reject entire shipment, return to supplier
+
+  **2. Pre-Shipment Inspection (before packing order for customer):**
+  - **Trigger:** All orders (100% inspection for first 30 days of new product)
+  - **Checks:**
+     - Correct item (matches order)
+     - Correct quantity
+     - No visible damage
+     - All accessories included (e.g., power cord, manual)
+  - **Photo evidence:** For high-value items (>$200), take photo before sealing box
+
+  **3. Random Post-Shipment Audits:**
+  - **Sample rate:** 5% of orders (randomly selected)
+  - **Method:** Video recording of packing process
+  - **Review:** If customer reports "wrong item", check video to verify
+  - **Outcome:** Identifies patterns (e.g., Picker A has 10% error rate → retrain)
+
+  **Product Recall Process:**
+
+  **Trigger:** Supplier issues recall (safety issue, e.g., battery fire risk)
+
+  1. **Halt sales immediately** (mark product as unavailable)
+  2. **Identify affected customers** (all orders with affected batch number)
+  3. **Notify customers within 24 hours:**
+     - Email + SMS: "Safety recall: Do NOT use product [X]"
+     - Offer: Full refund + prepaid return label + $20 apology credit
+  4. **Report to regulatory agencies** (e.g., CPSC in USA)
+
+  **Supplier Performance Scoring:**
+
+  ```
+  Supplier Quality Score = (1 - Defect Rate) * (1 - Return Rate) * On-Time Delivery Rate
+  ```
+
+  Example:
+  - Defect rate: 1% (0.01)
+  - Return rate: 3% (0.03)
+  - On-time: 95% (0.95)
+  ```
+  Score = (1 - 0.01) * (1 - 0.03) * 0.95
+        = 0.99 * 0.97 * 0.95
+        = 0.912 (91.2%)
+  ```
+
+  **Supplier Consequences:**
+  - Score >90%: Preferred supplier (priority for new orders)
+  - Score 80-90%: Acceptable (but monitored)
+  - Score <80%: Probation (30 days to improve)
+  - Score <70% for 60 days: Termination (find new supplier)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "qaCheckId": "UUID",
+    "checkType": "enum: RECEIVING | PRE_SHIPMENT | POST_SHIPMENT",
+    "orderId": "UUID (if applicable)",
+    "productId": "UUID",
+    "sku": "string",
+    "batchNumber": "string",
+    "inspectedBy": "UUID (inspector ID)",
+    "inspectedAt": "ISO8601",
+    "defectsFound": [
+      {
+        "defectType": "enum: DAMAGED | WRONG_ITEM | MISSING_ACCESSORY",
+        "severity": "enum: MINOR | MAJOR | CRITICAL"
+      }
+    ],
+    "passed": "boolean"
+  }
+  ```
+labels:
+  - quality_assurance
+  - qa
+  - supplier_management
+  - product_recalls
+  - domain_definition

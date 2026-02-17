@@ -1,0 +1,120 @@
+item_id: mobile_app.exclusive_features
+title: Mobile App Exclusive Features and Benefits
+content: |
+  **App-Only Incentives (Drive App Downloads):**
+
+  **1. Welcome Bonus:**
+  - **Offer:** "Download the app, get $10 off your first order"
+  - **Minimum purchase:** $50
+  - **Code:** AUTO10 (auto-applied on first app order)
+  - **Goal:** Convert web users to app users (higher retention)
+
+  **2. App-Exclusive Discounts:**
+  - **Weekly app-only deals:** "20% off [Category] - App Only!"
+  - **Flash sales:** Push notification at 12 PM: "Flash sale starts NOW - 2 hours only!"
+  - **Early access:** App users see new products 48 hours before website
+
+  **3. Free Shipping on App Orders:**
+  - **Web:** Free shipping on $50+
+  - **App:** Free shipping on $35+ (lower threshold)
+
+  **Mobile App Features (Not Available on Web):**
+
+  **1. Barcode Scanner:**
+  - **Use case:** Scan product barcode in physical store → compare price with our app
+  - **Flow:**
+     1. User scans barcode
+     2. App looks up product in catalog
+     3. Shows our price + reviews
+     4. "Buy now" button (if cheaper than in-store)
+
+  **2. AR Try-On (Augmented Reality):**
+  - **Categories:** Furniture, eyeglasses, makeup, clothing
+  - **Use case:** "See how this sofa looks in your living room"
+  - **Tech:** ARKit (iOS) / ARCore (Android)
+  - **Conversion boost:** +30% for furniture (users more confident in purchase)
+
+  **3. Voice Search:**
+  - **Trigger:** Tap microphone icon in search bar
+  - **Say:** "Blue running shoes size 10"
+  - **Result:** Instant search results
+
+  **4. Push Notifications (Real-Time Alerts):**
+
+  | Notification Type | Trigger | Example |
+  |-------------------|---------|---------|
+  | **Order Update** | Order status change | "Your order has shipped! Track it here" |
+  | **Price Drop** | Wishlisted item on sale | "The Blue T-Shirt you saved is now $15 (was $30)" |
+  | **Flash Sale** | Time-sensitive deal | "⚡ Flash Sale! 50% off Sneakers for 2 hours" |
+  | **Abandoned Cart** | Cart inactive for 2 hours | "You left 3 items in your cart - complete checkout?" |
+  | **Back in Stock** | Waitlisted item restocks | "Good news! [Product] is back in stock" |
+
+  **5. Loyalty Integration:**
+  - **In-app scanner:** Scan QR code at checkout (in-store) to earn points
+  - **Digital loyalty card:** No need to carry physical card
+
+  **6. Location-Based Features:**
+
+  **Store Locator:**
+  - "Find the nearest store" (GPS-based)
+  - Show hours, directions, in-stock inventory
+
+  **Geo-Fenced Deals:**
+  - When user within 1 mile of store → push notification: "You're near our store! Come in for 15% off today"
+
+  **Mobile App Analytics:**
+
+  | Metric | Definition | Benchmark |
+  |--------|------------|-----------|
+  | **App DAU/MAU** | Daily Active Users / Monthly Active Users | 20-30% |
+  | **Retention (Day 30)** | Users still using app 30 days after download | 10-20% |
+  | **Conversion Rate** | App orders / App sessions | 5-8% (2x higher than web) |
+  | **Push Opt-In Rate** | Users allowing push notifications | 40-60% |
+
+  **App Performance Requirements:**
+
+  - **Load time:** <2 seconds (from tap to usable)
+  - **Crash rate:** <0.5% (crashes per session)
+  - **App size:** <100 MB (for initial download)
+
+  **Deep Linking (Seamless Navigation):**
+
+  **Use Case:** Push notification says "Price drop on Blue T-Shirt"
+  - Tap notification → app opens directly to product page (NOT homepage)
+  - **Tech:** Firebase Dynamic Links or Branch.io
+
+  **Offline Mode:**
+  - **Browse catalog:** Cached product data (updated every 24 hours)
+  - **Cart:** Can add items offline, sync when back online
+  - **Orders:** View past orders offline (local storage)
+
+  **App Store Optimization (ASO):**
+
+  - **Title:** "[Brand Name] - Shop Fashion & Home" (keyword-rich)
+  - **Description:** Highlight app-exclusive features (barcode scanner, AR try-on)
+  - **Screenshots:** Show key features (not generic product images)
+  - **Reviews:** Prompt happy customers to rate app (target: 4.5+ stars)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "appSessionId": "UUID",
+    "customerId": "UUID",
+    "platform": "enum: IOS | ANDROID",
+    "appVersion": "string (e.g., '2.1.5')",
+    "deviceModel": "string (e.g., 'iPhone 14 Pro')",
+    "features Used": [
+      "enum: BARCODE_SCANNER | AR_TRY_ON | VOICE_SEARCH | PUSH_NOTIFICATIONS"
+    ],
+    "sessionDuration": "number (seconds)",
+    "ordersPlaced": "number",
+    "pushNotificationsEnabled": "boolean"
+  }
+  ```
+labels:
+  - mobile_app
+  - app_exclusive
+  - push_notifications
+  - ar
+  - location_based
+  - domain_definition

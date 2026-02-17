@@ -1,0 +1,84 @@
+item_id: flash_sales.lightning_deals
+title: Flash Sales and Lightning Deals
+content: |
+  **Flash Sale Definition:**
+  - **Duration:** 2-6 hours (short time window)
+  - **Discount:** 30-70% off (deep discount)
+  - **Inventory:** Limited quantity (e.g., "Only 50 units!")
+  - **Goal:** Create urgency, clear excess inventory, drive traffic
+
+  **Lightning Deal Mechanics:**
+
+  **1. Countdown Timer:**
+  - Display time remaining: "Ends in 02:35:17"
+  - Auto-update every second (client-side JavaScript)
+  - When timer hits 0:00:00 → deal ends, price reverts to regular
+
+  **2. Quantity Limit:**
+  - "Only 25 left at this price!"
+  - Decrement in real-time as purchases occur
+  - Reserve inventory when customer adds to cart (10-minute soft hold)
+
+  **3. Purchase Limits:**
+  - Max quantity per customer: 2-5 units (prevent resellers from buying all stock)
+  - Enforced by: Unique email + shipping address combo
+
+  **Flash Sale Scheduling:**
+
+  - **Prime Time:** 12 PM - 2 PM, 8 PM - 10 PM (high traffic hours)
+  - **Avoid:** 3 AM - 6 AM (low traffic, wasted effort)
+  - **Frequency:** Max 1-2 flash sales per week (if too frequent, customers wait for sales instead of buying at regular price)
+
+  **Waitlist for Sold-Out Deals:**
+
+  - If deal sells out in <30 minutes → enable waitlist
+  - If ≥100 people join waitlist → consider restocking + running deal again next week
+
+  **Price Protection (avoid customer backlash):**
+
+  - If customer bought item at regular price within past 7 days → offer price adjustment
+  - Refund difference between regular price and flash sale price
+  - Prevents "I bought this yesterday and now it's 50% off!" complaints
+
+  **Flash Sale Variants:**
+
+  **Mystery Flash Sale:**
+  - Product revealed only when customer clicks "Buy Now"
+  - Higher risk → higher discount (50-70% off)
+  - Good for clearing slow-moving inventory
+
+  **Graduated Discount (Dutch Auction):**
+  - Discount decreases over time
+  - Example:
+     - Hour 1: 60% off
+     - Hour 2: 50% off
+     - Hour 3: 40% off
+     - Hour 4: 30% off
+  - Incentivizes early purchases
+
+  **Social Sharing Boost:**
+  - "Share this deal on social media → unlock extra 5% off"
+  - Viral marketing amplification
+
+  **Event Payload Example:**
+  ```json
+  {
+    "flashSaleId": "UUID",
+    "productId": "UUID",
+    "originalPrice": "number (cents)",
+    "salePrice": "number (cents)",
+    "discountPercent": "number (e.g., 50 for 50% off)",
+    "startTime": "ISO8601",
+    "endTime": "ISO8601",
+    "totalQuantity": "number",
+    "remainingQuantity": "number",
+    "maxPerCustomer": "number",
+    "unitsSold": "number"
+  }
+  ```
+labels:
+  - flash_sales
+  - lightning_deals
+  - promotions
+  - urgency
+  - domain_definition

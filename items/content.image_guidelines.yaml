@@ -1,0 +1,99 @@
+item_id: content.image_guidelines
+title: Product Image Guidelines and Standards
+content: |
+  **Image Requirements (for product listings):**
+
+  **Mandatory:**
+  1. **Main Image (Hero Image):**
+     - Format: JPG or PNG
+     - Dimensions: 2000x2000 px (square)
+     - Background: Pure white (#FFFFFF) or transparent (PNG)
+     - Product: Centered, filling 85% of frame
+     - No watermarks, logos, or text overlays
+
+  2. **Minimum 3 Additional Images:**
+     - Angles: Front, back, side, top/bottom
+     - Close-ups: Key features (e.g., zipper, stitching, material texture)
+     - Scale reference: Product in use (e.g., person wearing shirt)
+
+  **Optional (but recommended):**
+  - **Lifestyle Images:** Product in real-world setting (e.g., couch in living room)
+  - **Infographics:** Dimensions, features, comparison charts
+  - **360° View:** Interactive spin (requires 36 images at 10° intervals)
+  - **Video:** Product demo, unboxing (max 2 minutes)
+
+  **Image Quality Standards:**
+
+  - **Resolution:** Minimum 1500x1500 px (for zoom functionality)
+  - **File Size:** <500 KB (optimize for fast page load)
+  - **Compression:** Use JPG quality 80-90% (balance size vs quality)
+  - **Color Profile:** sRGB (for consistent color across devices)
+
+  **Prohibited:**
+  - ❌ Stock photos from manufacturer (must use original photos)
+  - ❌ Images with competitor logos
+  - ❌ Misleading images (e.g., showing accessories not included)
+  - ❌ Low-resolution (<800x800 px)
+  - ❌ Images with watermarks (except brand logo, if applicable)
+
+  **Automated Image Checks (at upload):**
+
+  ```python
+  def validate_product_image(image):
+      # Check dimensions
+      if image.width < 1500 or image.height < 1500:
+          return {"valid": False, "error": "Image too small (min 1500x1500)"}
+
+      # Check aspect ratio (must be square for main image)
+      if abs(image.width / image.height - 1.0) > 0.05:
+          return {"valid": False, "error": "Main image must be square"}
+
+      # Check file size
+      if image.size_bytes > 500_000:
+          return {"valid": False, "error": "File size too large (max 500 KB)"}
+
+      # Check background color (for main image)
+      if not is_white_background(image):
+          return {"valid": False, "error": "Main image must have white background"}
+
+      return {"valid": True}
+  ```
+
+  **SEO Optimization:**
+  - **Alt text:** Descriptive (e.g., "Blue cotton t-shirt with v-neck")
+  - **File name:** Keyword-rich (e.g., `blue-cotton-tshirt-vneck.jpg`)
+  - **Image sitemap:** Submit to Google for image search indexing
+
+  **Accessibility (ADA Compliance):**
+  - All images MUST have alt text (for screen readers)
+  - Color contrast ratio: ≥4.5:1 (for text overlays on images)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "productId": "UUID",
+    "images": [
+      {
+        "imageId": "UUID",
+        "url": "string (CDN URL)",
+        "type": "enum: MAIN | ADDITIONAL | LIFESTYLE | VIDEO",
+        "dimensions": {
+          "width": "number",
+          "height": "number"
+        },
+        "fileSize": "number (bytes)",
+        "altText": "string",
+        "displayOrder": "number (1 for main image)"
+      }
+    ],
+    "validationPassed": "boolean",
+    "validationErrors": ["string (error messages)"]
+  }
+  ```
+labels:
+  - content_management
+  - product_images
+  - guidelines
+  - seo
+  - accessibility
+  - domain_definition

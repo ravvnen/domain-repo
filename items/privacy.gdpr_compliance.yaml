@@ -1,0 +1,79 @@
+item_id: privacy.gdpr_compliance
+title: GDPR Data Retention and Privacy Rules
+content: |
+  **GDPR Requirements (EU customers):**
+
+  **1. Right to Access (Subject Access Request):**
+  - Customer can request all personal data we hold
+  - **SLA:** Respond within 30 days
+  - **Format:** Machine-readable (JSON or CSV)
+  - **Contents:**
+     - Account info (name, email, address)
+     - Order history
+     - Payment method (last 4 digits only)
+     - Marketing preferences
+     - Support tickets
+
+  **2. Right to Erasure ("Right to be Forgotten"):**
+  - Customer can request account deletion
+  - **Exceptions (cannot delete if):**
+     - Active order in progress
+     - Outstanding balance owed
+     - Legal obligation to retain (e.g., tax records for 7 years)
+  - **What to delete:**
+     - Name, email, address → anonymize to "User_[UUID]"
+     - Payment methods → delete entirely
+     - Marketing lists → unsubscribe + delete email
+  - **What to retain (anonymized):**
+     - Order history (for analytics, but de-identified)
+     - Aggregated metrics (conversion rate, AOV)
+
+  **3. Right to Data Portability:**
+  - Customer can request data export to move to competitor
+  - **Format:** JSON or CSV
+  - **Timeline:** 30 days
+
+  **4. Consent Requirements:**
+  - **Marketing emails:** Explicit opt-in required (cannot be pre-checked)
+  - **Cookie tracking:** Banner with "Accept" or "Reject" (cannot assume consent)
+  - **Third-party data sharing:** Explicit consent for each partner
+
+  **Data Retention Policies:**
+
+  | Data Type | Retention Period | Reason |
+  |-----------|------------------|--------|
+  | Order history | 7 years | Tax/legal compliance |
+  | Payment card data | 0 (tokenize immediately) | PCI-DSS requirement |
+  | Guest checkout email | 90 days (if no account) | Marketing window |
+  | Support chat logs | 3 years | Quality assurance |
+  | Server access logs | 90 days | Security audit |
+  | A/B test results | Indefinite (anonymized) | Product improvement |
+
+  **Auto-Deletion Triggers:**
+  - Guest accounts: Delete after 90 days with no activity
+  - Abandoned carts: Delete after 30 days
+  - Expired promo codes: Delete after expiration + 1 year
+
+  **CRITICAL: Audit Trail for Deletions:**
+  - Log WHO requested deletion, WHEN, and WHAT was deleted
+  - Retain audit trail for 7 years (even though data is deleted)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "customerId": "UUID",
+    "requestType": "enum: ACCESS | ERASURE | PORTABILITY",
+    "requestedAt": "ISO8601",
+    "completedAt": "ISO8601",
+    "dataExported": "string (S3 URL to JSON file)",
+    "dataDeleted": [
+      "string (table.field, e.g., 'customers.email')"
+    ]
+  }
+  ```
+labels:
+  - privacy
+  - gdpr
+  - compliance
+  - data_retention
+  - domain_definition

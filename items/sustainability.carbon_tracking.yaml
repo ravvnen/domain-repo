@@ -1,0 +1,124 @@
+item_id: sustainability.carbon_tracking
+title: Sustainability and Carbon Footprint Tracking
+content: |
+  **Carbon Footprint Calculation (Per Order):**
+
+  **Components:**
+
+  1. **Product Manufacturing (Scope 3 emissions):**
+     - Data source: Supplier provides carbon footprint per unit
+     - Example: T-shirt manufacturing = 5 kg CO2e
+
+  2. **Packaging:**
+     - Cardboard box: 0.5 kg CO2e
+     - Plastic mailers: 0.2 kg CO2e
+     - Recycled materials: 50% reduction
+
+  3. **Shipping:**
+     - **Ground (truck):** 0.1 kg CO2e per mile
+     - **Air freight:** 1.0 kg CO2e per mile (10x worse than ground!)
+     - **Distance:** Calculate from warehouse to customer ZIP code
+
+  **Total Carbon Footprint:**
+  ```
+  Total CO2e = Manufacturing + Packaging + (Shipping Distance * Shipping Mode Factor)
+  ```
+
+  **Example:**
+  - Product: T-shirt (5 kg CO2e manufacturing)
+  - Packaging: Recycled box (0.25 kg CO2e)
+  - Shipping: 500 miles via ground (500 * 0.1 = 50 kg CO2e)
+  - **Total: 55.25 kg CO2e**
+
+  **Customer-Facing Display:**
+
+  **At Checkout:**
+  ```
+  [Sustainability Badge]
+  🌱 This order's carbon footprint: 55 kg CO2e
+  (Equivalent to driving 140 miles)
+
+  [ ] Offset this carbon footprint for $1.50? (optional)
+  ```
+
+  **Carbon Offset Program:**
+
+  - **Cost:** $0.02 per kg CO2e (market rate for carbon credits)
+  - **Partner:** Partner with verified carbon offset programs:
+     - Tree planting (e.g., One Tree Planted)
+     - Renewable energy (e.g., solar, wind projects)
+     - Carbon capture (e.g., direct air capture)
+  - **Certification:** Only buy offsets verified by Gold Standard or Verra (VCS)
+
+  **Sustainable Packaging Options:**
+
+  **Standard vs. Sustainable:**
+
+  | Feature | Standard | Sustainable | Extra Cost |
+  |---------|----------|-------------|------------|
+  | Box material | Virgin cardboard | 100% recycled | +$0.25 |
+  | Tape | Plastic tape | Paper tape | +$0.10 |
+  | Filler | Bubble wrap | Biodegradable peanuts | +$0.15 |
+  | **Total** | $1.00 | $1.50 | +$0.50 |
+
+  **Customer Choice:**
+  - At checkout: "Use sustainable packaging? (+$0.50)"
+  - Default: Standard (opt-in for sustainable)
+  - VIP customers: Sustainable packaging free
+
+  **Shipping Method Carbon Impact:**
+
+  **At Checkout (Display):**
+  ```
+  Shipping Options:
+
+  ○ Standard Ground (5-7 days) - $5.99
+    Carbon: 10 kg CO2e 🌱 Lowest impact
+
+  ○ 2-Day Air - $12.99
+    Carbon: 50 kg CO2e ⚠️ Higher impact
+
+  ○ Overnight Air - $24.99
+    Carbon: 100 kg CO2e ⚠️⚠️ Highest impact
+  ```
+
+  **Encourage sustainable choices:**
+  - Highlight ground shipping as "Eco-Friendly Choice"
+  - Offer free ground shipping for orders >$50
+
+  **Sustainability Metrics (for reporting):**
+
+  - **Monthly Report:**
+     - Total orders shipped: 10,000
+     - Total carbon footprint: 500,000 kg CO2e
+     - Carbon offset participation rate: 15% (1,500 customers opted in)
+     - Carbon offset revenue: $15,000
+
+  - **Annual Sustainability Report (for ESG):**
+     - Total emissions: 6 million kg CO2e
+     - Offsets purchased: 1 million kg CO2e (17% offset rate)
+     - Net emissions: 5 million kg CO2e
+     - **Goal:** Carbon neutral by 2030 (100% offset)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "carbonFootprint": {
+      "manufacturing": "number (kg CO2e)",
+      "packaging": "number (kg CO2e)",
+      "shipping": "number (kg CO2e)",
+      "total": "number (kg CO2e)"
+    },
+    "carbonOffsetOptIn": "boolean",
+    "carbonOffsetCost": "number (cents)",
+    "sustainablePackaging": "boolean",
+    "shippingMethod": "enum: GROUND | 2DAY | OVERNIGHT"
+  }
+  ```
+labels:
+  - sustainability
+  - carbon_footprint
+  - environmental
+  - esg
+  - domain_definition

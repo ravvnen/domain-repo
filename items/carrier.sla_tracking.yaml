@@ -1,0 +1,63 @@
+item_id: carrier.sla_tracking
+title: Carrier SLA and Performance Tracking
+content: |
+  **Carrier Service Level Agreements (SLAs):**
+
+  | Carrier | Service | Promised Delivery | SLA Breach Penalty |
+  |---------|---------|-------------------|-------------------|
+  | FedEx | Overnight | Next business day by 10:30 AM | Refund shipping cost |
+  | FedEx | 2-Day | 2 business days by 8 PM | Refund shipping cost |
+  | UPS | Ground | 5 business days | No refund (best effort) |
+  | USPS | Priority Mail | 3 business days | No refund (best effort) |
+  | DHL | Express | Next business day by noon | Refund shipping cost |
+
+  **Tracking Delivery Performance:**
+
+  For each shipment, track:
+  - `promisedDeliveryDate` (from carrier API at shipment time)
+  - `actualDeliveryDate` (from DeliveryConfirmed event)
+  - `deliveryDelta = actualDeliveryDate - promisedDeliveryDate` (in days)
+
+  **Automated Actions:**
+
+  1. **If deliveryDelta > 0 (late delivery):**
+     - Emit `CarrierSLABreach` event
+     - File shipping refund claim with carrier (if SLA breach penalty applies)
+     - Notify customer with apology + $10 store credit
+
+  2. **If deliveryDelta > 3 days (severely late):**
+     - Escalate to customer service for proactive outreach
+     - Consider carrier substitution for future orders to this region
+
+  3. **If package marked "LOST" by carrier:**
+     - Immediately ship replacement (if inventory available)
+     - File claim with carrier for reimbursement
+     - Emit `ShipmentLost` event
+
+  **Carrier Selection Rules (for new orders):**
+
+  - Sort carriers by:
+     1. On-time delivery rate for destination ZIP (past 90 days)
+     2. Cost (if on-time rate >95%)
+     3. Customer preference (if specified)
+
+  - Blacklist carrier for ZIP code if on-time rate <80% for 30 consecutive days
+
+  **Event Payload Example:**
+  ```json
+  {
+    "shipmentId": "UUID",
+    "carrierId": "enum: FEDEX | UPS | USPS | DHL",
+    "serviceLevel": "string (e.g., 'OVERNIGHT', 'GROUND')",
+    "promisedDeliveryDate": "ISO8601",
+    "actualDeliveryDate": "ISO8601",
+    "deliveryDeltaDays": "number (can be negative if early)",
+    "slaBreached": "boolean",
+    "refundClaimed": "boolean"
+  }
+  ```
+labels:
+  - carrier_integration
+  - sla_monitoring
+  - business_rules
+  - domain_definition

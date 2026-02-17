@@ -1,0 +1,102 @@
+item_id: multi_currency.exchange_rates
+title: Multi-Currency Support and Exchange Rates
+content: |
+  **Supported Currencies:**
+
+  | Currency | Symbol | Primary Markets |
+  |----------|--------|-----------------|
+  | USD | $ | USA, international default |
+  | EUR | € | Europe (EU countries) |
+  | GBP | £ | United Kingdom |
+  | CAD | C$ | Canada |
+  | AUD | A$ | Australia |
+  | JPY | ¥ | Japan |
+
+  **Currency Detection:**
+
+  **Auto-Detection (Recommended):**
+  1. **Geolocation:** Detect user's country via IP address
+     - IP in USA → show USD
+     - IP in France → show EUR
+     - IP in UK → show GBP
+
+  2. **Browser Language:** Fallback if geolocation unavailable
+     - `navigator.language === 'en-GB'` → GBP
+     - `navigator.language === 'fr-FR'` → EUR
+
+  **Manual Selection:**
+  - Currency dropdown in header/footer
+  - Preference saved in cookie (30-day expiration)
+
+  **Exchange Rate Management:**
+
+  **Data Source:** Use external API (e.g., OpenExchangeRates, CurrencyLayer)
+  - **Update frequency:** Hourly (for volatile currencies)
+  - **Cache:** 1 hour (to avoid API rate limits)
+
+  **Markup Strategy:**
+  - **Base price:** Always in USD (single source of truth)
+  - **Displayed price:** USD * exchange_rate * markup
+
+  **Example Markup:**
+  ```
+  Product base price: $100 USD
+  EUR exchange rate: 0.92 (1 USD = 0.92 EUR)
+  Markup: 3% (to cover exchange rate fluctuations)
+
+  Displayed price (EUR) = 100 * 0.92 * 1.03 = €94.76
+  ```
+
+  **Price Rounding Rules:**
+  - **USD:** Round to .99 (e.g., $99.99)
+  - **EUR/GBP:** Round to .95 or .99 (e.g., €94.95)
+  - **JPY:** No decimals (round to nearest ¥10, e.g., ¥10,000)
+
+  **Payment Currency:**
+
+  **Critical Rule:** **ALWAYS charge in customer's billing currency**
+  - Customer in USA, billing address USA → charge in USD
+  - Customer in France, billing address France → charge in EUR
+
+  **Why?** Avoid foreign transaction fees charged by customer's bank (2-3%)
+
+  **Currency Conversion at Checkout:**
+
+  **Scenario:** Customer browsing in EUR, but billing address is in USA (USD)
+
+  **Flow:**
+  1. Cart shows prices in EUR (browsing currency)
+  2. At checkout, detect billing address → USA
+  3. Convert cart total: EUR → USD
+  4. Charge customer in USD (avoids FX fees)
+  5. Display: "You will be charged $109.50 USD (€100.00 EUR)"
+
+  **Dynamic Currency Conversion (DCC) - Avoid!**
+  - Some payment processors offer "Pay in your home currency"
+  - **Problem:** Terrible exchange rates (5-7% markup)
+  - **Recommendation:** Disable DCC, always charge in local currency
+
+  **Price Consistency:**
+  - **Problem:** Exchange rates fluctuate → prices change daily
+  - **Solution:** Update prices weekly (not hourly) for stability
+  - **Exception:** Checkout price = locked price from cart (prevent "price changed" errors)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "browseCurrency": "enum: USD | EUR | GBP | etc.",
+    "billingCurrency": "enum: USD | EUR | GBP | etc.",
+    "exchangeRate": "number (e.g., 0.92 for USD→EUR)",
+    "priceUSD": "number (cents, base price)",
+    "priceDisplay": "number (cents, in browsing currency)",
+    "priceCharged": "number (cents, in billing currency)",
+    "currencySource": "enum: AUTO_DETECTED | MANUAL_SELECTION"
+  }
+  ```
+labels:
+  - multi_currency
+  - internationalization
+  - exchange_rates
+  - pricing
+  - domain_definition

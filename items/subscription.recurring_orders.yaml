@@ -1,0 +1,87 @@
+item_id: subscription.recurring_orders
+title: Subscription and Recurring Order Rules
+content: |
+  **Subscription Types:**
+
+  **1. Auto-Replenish (Consumables):**
+  - Example: Dog food, vitamins, diapers
+  - Frequency: Every 30, 60, or 90 days
+  - Discount: 10% off + free shipping
+
+  **2. Subscription Box (Curated):**
+  - Example: Monthly beauty box, snack box
+  - Frequency: Monthly (fixed schedule)
+  - Discount: 15% off vs. buying items individually
+
+  **Billing Cycle:**
+
+  1. **Initial Subscription Creation:**
+     - Customer selects products + frequency
+     - Charge immediately for first order
+     - Emit `SubscriptionCreated` event
+
+  2. **Recurring Billing:**
+     - Charge 3 days before next scheduled delivery
+     - Reason: Time to process payment failures before delivery date
+     - If payment fails → retry after 24 hours (up to 3 attempts)
+
+  3. **Payment Failure Handling:**
+     - Attempt 1: Day -3 (3 days before delivery)
+     - Attempt 2: Day -2 (retry with email notification)
+     - Attempt 3: Day -1 (final attempt + SMS notification)
+     - If all fail: Pause subscription + email customer to update payment method
+
+  **Subscription Pause/Cancel Rules:**
+
+  - **Pause:** Customer can pause for 1-3 months
+     - Does NOT cancel subscription (auto-resume after pause period)
+
+  - **Skip Next Delivery:** One-time skip (subscription continues normally after)
+
+  - **Cancel:**
+     - Effective immediately if no pending shipment
+     - If shipment already processed → cancel takes effect after current delivery
+
+  **Subscription Modifications:**
+
+  - **Change frequency:** Takes effect AFTER current delivery
+  - **Change products:** Takes effect AFTER current delivery
+  - **Change quantity:** Takes effect AFTER current delivery
+  - **Exception:** Upgrades (adding products) can take effect immediately if customer pays difference
+
+  **Inventory Handling for Subscriptions:**
+
+  - **Reserve inventory 7 days before delivery**
+     - If out of stock → notify customer with substitution options
+     - If customer declines substitution → skip delivery (no charge)
+
+  **Churn Prevention:**
+  - If customer tries to cancel → offer one of:
+     1. 20% discount on next 3 deliveries
+     2. Free upgrade to premium product
+     3. Pause instead of cancel
+  - Emit `SubscriptionCancellationAttempt` event for analytics
+
+  **Event Payload Example:**
+  ```json
+  {
+    "subscriptionId": "UUID",
+    "customerId": "UUID",
+    "status": "enum: ACTIVE | PAUSED | CANCELLED",
+    "products": [
+      {
+        "sku": "string",
+        "quantity": "number"
+      }
+    ],
+    "billingFrequency": "enum: EVERY_30_DAYS | EVERY_60_DAYS | EVERY_90_DAYS",
+    "nextBillingDate": "ISO8601",
+    "nextDeliveryDate": "ISO8601",
+    "discountPercent": "number"
+  }
+  ```
+labels:
+  - subscriptions
+  - recurring_orders
+  - business_rules
+  - domain_definition

@@ -1,0 +1,80 @@
+item_id: social_proof.urgency_signals
+title: Social Proof and Urgency Signals
+content: |
+  **Social Proof Types:**
+
+  **1. Recent Purchase Notifications (Live Activity):**
+  - **Display:** "John from New York just bought this item 3 minutes ago"
+  - **Trigger:** Real-time (when order reaches PAYMENT_AUTHORIZED state)
+  - **Privacy:** First name + City only (never full name/address)
+  - **Frequency:** Max 1 notification per 30 seconds per product page
+  - **Truthfulness:** MUST be real purchases (fake notifications violate FTC rules)
+
+  **2. "X People Are Viewing This" (Scarcity Signal):**
+  - **Display:** "🔥 12 people are viewing this right now"
+  - **Data Source:** Count unique visitors on product page in past 15 minutes
+  - **Threshold:** Only show if ≥5 viewers (otherwise seems unpopular)
+  - **Update Frequency:** Every 60 seconds (via WebSocket or polling)
+
+  **3. "Only X Left in Stock" (Inventory Urgency):**
+  - **Display:** "⚠️ Only 3 left at this price!"
+  - **Trigger:** When inventory <10 units
+  - **Caveat:** MUST be accurate (no fake scarcity)
+  - **Multi-warehouse:** Show total across all warehouses (not per location)
+
+  **4. "Trending" Badge:**
+  - **Display:** "🔥 Trending" or "⭐ Bestseller"
+  - **Criteria:**
+     - Sales spike >3x average in past 7 days, OR
+     - Top 10 bestselling product in category
+  - **Duration:** Badge expires after 30 days (prevents stale "trending" items)
+
+  **5. "High Demand" Warning:**
+  - **Display:** "High demand: Expected to sell out by [Date]"
+  - **Calculation:**
+     ```
+     sellOutDate = today + (currentInventory / avgDailySales)
+     if sellOutDate < today + 7 days:
+         show warning
+     ```
+
+  **6. "Customer Reviews Mention" (Trust Signal):**
+  - **Display:** "127 customers say this runs true to size"
+  - **Data Source:** NLP analysis of reviews (keyword extraction)
+  - **Common themes:** "true to size", "comfortable", "durable", "value for money"
+
+  **7. "As Seen On" (Media Mentions):**
+  - **Display:** "As featured in Vogue, GQ, The New York Times"
+  - **Placement:** Product page header
+  - **Requirement:** Link to actual article (verifiable)
+
+  **CRITICAL: FTC Compliance:**
+  - ❌ Do NOT fabricate social proof (illegal under FTC Act)
+  - ❌ Do NOT show "10 left in stock" if actually 100+ in stock
+  - ✅ All notifications must be truthful and verifiable
+
+  **A/B Test Results (from Acme Corp):**
+  - **Adding recent purchase notifications:** +8% conversion rate
+  - **"Only X left" for items <10 qty:** +12% conversion rate
+  - **"X people viewing" badge:** +5% conversion rate
+
+  **Event Payload Example:**
+  ```json
+  {
+    "productId": "UUID",
+    "socialProofType": "enum: RECENT_PURCHASE | PEOPLE_VIEWING | LOW_STOCK | TRENDING",
+    "displayText": "string (e.g., 'Only 5 left in stock')",
+    "dataSource": {
+      "currentViewers": "number",
+      "currentInventory": "number",
+      "recentPurchaseTimestamp": "ISO8601"
+    },
+    "displayedAt": "ISO8601",
+    "expiresAt": "ISO8601"
+  }
+  ```
+labels:
+  - social_proof
+  - urgency
+  - conversion_optimization
+  - domain_definition

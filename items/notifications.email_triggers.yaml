@@ -1,0 +1,68 @@
+item_id: notifications.email_triggers
+title: Customer Email Notification Triggers
+content: |
+  **Automated Email Triggers (Event-Driven):**
+
+  | Event | Email Template | Send Within | Customer Segment |
+  |-------|----------------|-------------|------------------|
+  | OrderCreated | order_confirmation.html | 5 minutes | All customers |
+  | PaymentAuthorized | payment_authorized.html | Immediate | All customers |
+  | OrderShipped | shipment_tracking.html | 1 hour | All customers |
+  | DeliveryConfirmed | delivery_confirmation.html | 2 hours | All customers |
+  | OrderCancelled | cancellation_notice.html | 30 minutes | All customers |
+  | ReturnApproved | return_label.html | 1 hour | All customers |
+  | RefundIssued | refund_confirmation.html | Immediate | All customers |
+  | CarrierSLABreach | delivery_delay_apology.html | 12 hours | All customers |
+  | ReviewRequestEligible | review_request.html | 7 days post-delivery | Registered customers only |
+
+  **Email Content Rules:**
+
+  **OrderCreated Email MUST include:**
+  - Order number
+  - Itemized list with prices
+  - Total amount charged (including tax, shipping)
+  - Estimated delivery date
+  - Link to order tracking page
+
+  **OrderShipped Email MUST include:**
+  - Tracking number (clickable link to carrier website)
+  - Carrier name
+  - Estimated delivery date
+  - Link to our tracking page (aggregates all shipments for split orders)
+
+  **DeliveryConfirmed Email MUST include:**
+  - Delivery timestamp
+  - Delivery location (e.g., "Front door")
+  - Photo of delivered package (if available from carrier)
+  - Link to initiate return (if within 30-day window)
+  - Request for product review (with $5 credit incentive)
+
+  **CRITICAL: Do NOT send if customer opted out:**
+  - Check `customer.emailPreferences.orderUpdates` flag before sending
+  - Exception: Fraud alerts, account security emails (always send)
+
+  **Email Personalization:**
+  - Use customer's first name if available
+  - Include recommended products based on purchase history (in OrderShipped email)
+  - If customer is VIP (lifetime value >$5000), use premium email template
+
+  **Retry Logic:**
+  - If email send fails (SMTP error), retry 3 times with exponential backoff
+  - If still fails after 3 retries, emit `EmailDeliveryFailed` event → manual follow-up
+
+  **Event Payload Example:**
+  ```json
+  {
+    "emailId": "UUID",
+    "trigger": "enum: ORDER_CREATED | ORDER_SHIPPED | etc.",
+    "recipientEmail": "string",
+    "templateId": "string",
+    "sentAt": "ISO8601",
+    "deliveryStatus": "enum: SENT | FAILED | BOUNCED | OPENED | CLICKED"
+  }
+  ```
+labels:
+  - notifications
+  - email
+  - customer_experience
+  - domain_definition

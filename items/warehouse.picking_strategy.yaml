@@ -1,0 +1,70 @@
+item_id: warehouse.picking_strategy
+title: Warehouse Picking Strategy Rules
+content: |
+  **Picking Strategies (Order Fulfillment):**
+
+  **1. Single-Order Picking (default for <5 items):**
+  - Pick all items for ONE order at a time
+  - Pros: Simple, low error rate
+  - Cons: Slow for high-volume periods
+
+  **2. Batch Picking (use when queue >50 orders):**
+  - Pick same SKU for multiple orders in one trip
+  - Example: Pick 20x "Blue Widget" for orders #101-#120
+  - Pros: Faster, reduces warehouse travel time
+  - Cons: Requires sorting step after picking
+
+  **3. Zone Picking (use for multi-warehouse or large facilities):**
+  - Divide warehouse into zones (A, B, C)
+  - Each picker handles one zone only
+  - Order passes through zones sequentially
+  - Pros: Specialization, faster picking per zone
+  - Cons: Requires coordination, handoff delays
+
+  **Priority Rules (which orders to pick first):**
+
+  1. **Expedited shipping** (overnight, 2-day) → highest priority
+  2. **SLA breach risk** (order >24 hours old) → second priority
+  3. **High-value orders** (>$1000) → third priority
+  4. **FIFO** (first in, first out) for standard shipping
+
+  **Picking Validation (prevent errors):**
+
+  - Barcode scan required: Every SKU must be scanned before adding to bin
+  - Weight validation: Picked order weight must match expected weight ±5%
+  - Photo verification: For high-value items (>$200), photo of picked item required
+
+  **When Picked Item Damaged:**
+  - Mark SKU as "DAMAGED" in inventory system
+  - Substitute with another unit if available
+  - If no substitutes → emit `ItemUnavailable` event → notify customer
+
+  **Picking Event Payloads:**
+  ```json
+  // PickingStarted
+  {
+    "orderId": "UUID",
+    "pickerId": "UUID (worker ID)",
+    "strategy": "enum: SINGLE_ORDER | BATCH | ZONE",
+    "startedAt": "ISO8601"
+  }
+
+  // PickingCompleted
+  {
+    "orderId": "UUID",
+    "pickerId": "UUID",
+    "completedAt": "ISO8601",
+    "pickedItems": [
+      {
+        "sku": "string",
+        "quantityPicked": "number",
+        "barcodeScanned": "boolean"
+      }
+    ]
+  }
+  ```
+labels:
+  - warehouse_operations
+  - fulfillment
+  - business_rules
+  - domain_definition

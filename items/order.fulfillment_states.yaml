@@ -1,0 +1,41 @@
+item_id: order.fulfillment_states
+title: Order Fulfillment State Machine
+content: |
+  **CANONICAL STATE TRANSITIONS:**
+
+  ```
+  CREATED → PAYMENT_AUTHORIZED → READY_TO_FULFILL → PICKING → PACKING →
+  SHIPPED → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED
+
+  (Alternative flows: CANCELLED, REFUNDED, RETURNED)
+  ```
+
+  **State Definitions:**
+
+  1. **CREATED**: Order placed, payment NOT yet processed
+  2. **PAYMENT_AUTHORIZED**: Payment gateway authorized (not captured yet)
+  3. **READY_TO_FULFILL**: Payment captured, sent to warehouse queue
+  4. **PICKING**: Warehouse worker scanning items from shelves
+  5. **PACKING**: Items being placed in box, label printed
+  6. **SHIPPED**: Carrier scanned package at distribution center (ShipmentConfirmed event)
+  7. **IN_TRANSIT**: Package moving between facilities
+  8. **OUT_FOR_DELIVERY**: Package on delivery truck for final mile
+  9. **DELIVERED**: Customer signed for package (DeliveryConfirmed event)
+
+  **CRITICAL: "Fulfilled" vs "Completed":**
+  - **Fulfilled**: Order reached DELIVERED state (customer has package)
+  - **Completed**: Order is financially closed (no refunds/returns possible, 30-day window expired)
+
+  **Common mistake:**
+  - ❌ Treating "SHIPPED" as "fulfilled" → customer doesn't have package yet!
+  - ✅ Only mark "fulfilled" when state = DELIVERED
+
+  **State transition rules:**
+  - Cannot skip states (e.g., CREATED → SHIPPED is invalid)
+  - CANCELLED can happen from any pre-SHIPPED state
+  - RETURNED can only happen from DELIVERED state
+labels:
+  - order_management
+  - state_machine
+  - fulfillment
+  - domain_definition

@@ -1,0 +1,86 @@
+item_id: customer.segmentation_rules
+title: Customer Segmentation Logic
+content: |
+  **Customer Segments (for targeted marketing & pricing):**
+
+  **1. VIP Customers:**
+  - **Criteria:**
+     - Lifetime value (LTV) >$5000, OR
+     - >20 orders in past 12 months, OR
+     - Average order value (AOV) >$500
+  - **Benefits:**
+     - 10% discount on all orders
+     - Free expedited shipping
+     - Dedicated customer service line
+     - Early access to new products (48-hour head start)
+
+  **2. Loyal Customers:**
+  - **Criteria:**
+     - 5-19 orders in past 12 months, OR
+     - LTV $1000-$4999
+  - **Benefits:**
+     - 5% discount on all orders
+     - Free standard shipping on orders >$50
+     - Birthday discount (20% off)
+
+  **3. At-Risk Customers:**
+  - **Criteria:**
+     - Previous loyal customer (LTV >$500) BUT
+     - No orders in past 90 days
+  - **Actions:**
+     - Send "We miss you" email with 15% discount code
+     - Personalized product recommendations
+     - If no response in 30 days → move to "Lapsed"
+
+  **4. Lapsed Customers:**
+  - **Criteria:**
+     - No orders in past 180 days
+     - Previously placed ≥2 orders
+  - **Actions:**
+     - Quarterly re-engagement campaign
+     - Heavy discount (25%-30%) to win back
+     - Survey: "Why did you stop buying from us?"
+
+  **5. First-Time Customers:**
+  - **Criteria:**
+     - Exactly 1 order placed
+     - Order within past 30 days
+  - **Actions:**
+     - Welcome email series (Day 1, 3, 7, 14)
+     - 10% discount on second order
+     - Request product review
+
+  **6. High-Return-Rate Customers (flag for fraud):**
+  - **Criteria:**
+     - Return rate >30% (returns / total orders)
+     - >5 orders placed
+  - **Actions:**
+     - Flag account for manual review
+     - Restrict return eligibility (e.g., no "changed mind" returns)
+     - If return rate >50% → ban account
+
+  **Segment Calculation Frequency:**
+  - Recalculate nightly (batch job at 2 AM UTC)
+  - Triggered recalculation: On order completion, return processed
+
+  **Event Payload Example:**
+  ```json
+  {
+    "customerId": "UUID",
+    "previousSegment": "enum: VIP | LOYAL | AT_RISK | etc.",
+    "newSegment": "enum",
+    "calculatedAt": "ISO8601",
+    "metrics": {
+      "lifetimeValue": "number (cents)",
+      "orderCount": "number",
+      "averageOrderValue": "number (cents)",
+      "daysSinceLastOrder": "number",
+      "returnRate": "number (decimal, 0-1)"
+    }
+  }
+  ```
+labels:
+  - customer_segmentation
+  - crm
+  - business_rules
+  - domain_definition

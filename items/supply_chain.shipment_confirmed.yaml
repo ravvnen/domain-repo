@@ -1,0 +1,35 @@
+item_id: supply_chain.shipment_confirmed
+title: ShipmentConfirmed Event Definition
+content: |
+  **Event Name:** ShipmentConfirmed
+
+  **When to emit:** When carrier scans package at distribution center (NOT when customer receives it).
+
+  **Payload Schema:**
+  ```json
+  {
+    "orderId": "string (UUID)",
+    "shipmentId": "string (UUID)",
+    "carrierId": "string (e.g., 'FEDEX', 'UPS', 'DHL')",
+    "trackingNumber": "string",
+    "scanTimestamp": "ISO8601 datetime",
+    "estimatedDeliveryDate": "ISO8601 date",
+    "originFacilityCode": "string",
+    "destinationZipCode": "string"
+  }
+  ```
+
+  **Do NOT confuse with:**
+  - `DeliveryConfirmed`: Emitted when customer signs for delivery
+  - `ShipmentCreated`: Emitted when shipping label is printed
+  - `PackagePickedUp`: Emitted when carrier picks up from warehouse
+
+  **Downstream effects:**
+  - Customer Service: Update order status to "In Transit"
+  - Notifications Service: Send tracking email to customer
+  - Inventory Service: Mark items as "shipped" (no longer reservable)
+labels:
+  - supply_chain
+  - events
+  - shipment
+  - domain_definition

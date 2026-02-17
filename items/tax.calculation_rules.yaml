@@ -1,0 +1,80 @@
+item_id: tax.calculation_rules
+title: Sales Tax Calculation Rules
+content: |
+  **Tax Nexus Rules (US-based company):**
+
+  **Physical Presence Nexus:**
+  - Must collect sales tax in states where company has:
+    - Physical office, warehouse, or retail store
+    - Employees working remotely
+    - Inventory stored (including 3PL warehouses)
+
+  **Economic Nexus (post-Wayfair):**
+  - Must collect sales tax if:
+    - Annual sales >$100,000 in a state, OR
+    - >200 transactions in a state per year
+  - Threshold varies by state (check state-specific rules)
+
+  **Tax Calculation:**
+
+  ```
+  taxableAmount = subtotal + shipping - (non-taxable items)
+  salesTax = taxableAmount * (stateTaxRate + countyTaxRate + cityTaxRate)
+  ```
+
+  **Non-Taxable Items (varies by state):**
+  - Groceries (exempt in most states)
+  - Prescription medications (exempt everywhere)
+  - Clothing (exempt in NY, NJ, PA under $110)
+
+  **Shipping Taxability:**
+  - Taxable: CA, NY, TX, FL (shipping is part of sale)
+  - Non-taxable: OR, NH, MT, DE (no sales tax at all)
+
+  **Tax Exemptions (requires certificate):**
+
+  - **Reseller Exemption:**
+    - Customer provides valid resale certificate
+    - Store certificate on file (verify expiration date)
+    - Do NOT charge sales tax
+
+  - **Non-Profit Exemption:**
+    - Customer provides 501(c)(3) certificate
+    - Verify tax-exempt ID with state
+    - Do NOT charge sales tax
+
+  **CRITICAL Mistake to Avoid:**
+  - ❌ Using customer's billing address for tax → wrong if ship-to is different state
+  - ✅ Always use **shipping destination address** for tax jurisdiction
+
+  **Tax Remittance (for finance team):**
+  - File sales tax returns monthly (if annual tax >$10K in state)
+  - File quarterly (if annual tax <$10K)
+  - Due date: 20th of following month/quarter
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "taxJurisdiction": {
+      "state": "string (e.g., 'CA')",
+      "county": "string",
+      "city": "string",
+      "zipCode": "string"
+    },
+    "taxableAmount": "number (cents)",
+    "taxRates": {
+      "state": "number (decimal, e.g., 0.0725 for 7.25%)",
+      "county": "number",
+      "city": "number"
+    },
+    "totalTax": "number (cents)",
+    "exemptionApplied": "boolean",
+    "exemptionCertificateId": "string (if applicable)"
+  }
+  ```
+labels:
+  - tax_calculation
+  - compliance
+  - business_rules
+  - domain_definition

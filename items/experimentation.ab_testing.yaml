@@ -1,0 +1,72 @@
+item_id: experimentation.ab_testing
+title: A/B Testing and Feature Flags
+content: |
+  **A/B Test Lifecycle:**
+
+  1. **Hypothesis:** "Changing CTA button from 'Buy Now' to 'Add to Cart' will increase conversion by 10%"
+  2. **Setup:** Define control (A) vs variant (B), traffic split (e.g., 50/50)
+  3. **Run:** Collect data for minimum sample size (statistical significance)
+  4. **Analyze:** Measure primary metric (conversion rate), secondary metrics (AOV, bounce rate)
+  5. **Decision:** Ship winning variant, or roll back if no significant difference
+
+  **Traffic Allocation:**
+
+  - **Randomization:** Hash(userId) % 100
+     - 0-49 → Control (A)
+     - 50-99 → Variant (B)
+  - **Consistency:** Same user ALWAYS sees same variant (use sticky bucketing)
+  - **Exclude:** VIP customers from risky experiments (e.g., new checkout flow)
+
+  **Statistical Significance:**
+
+  - **Minimum sample size:** 1000 conversions per variant (for 95% confidence)
+  - **Run time:** Minimum 7 days (capture weekly seasonality)
+  - **Early stopping:** Do NOT stop test early just because one variant is winning
+     - Reason: Regression to the mean, peeking bias
+
+  **Primary Metrics (choose ONE per test):**
+  - Conversion rate
+  - Revenue per visitor
+  - Average order value
+  - Cart abandonment rate
+
+  **Secondary Metrics (track but don't optimize for):**
+  - Bounce rate
+  - Time on site
+  - Product page views per session
+
+  **Guardrail Metrics (stop test if these degrade):**
+  - Page load time >3 seconds → kill experiment
+  - Error rate >1% → kill experiment
+  - Return rate increases >5 percentage points → investigate
+
+  **Feature Flags (for gradual rollouts):**
+
+  **Rollout Strategy:**
+  1. **Internal dogfooding:** 5% (employees only)
+  2. **Beta users:** 10% (opted-in customers)
+  3. **Gradual rollout:** 25% → 50% → 100%
+  4. **Monitor:** Error rates, conversion, customer support tickets at each stage
+
+  **Kill Switch:**
+  - Every feature flag must have instant rollback capability
+  - If error rate spikes → auto-rollback to control (no manual intervention)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "experimentId": "UUID",
+    "experimentName": "string (e.g., 'checkout_button_color')",
+    "userId": "UUID",
+    "variant": "enum: CONTROL | VARIANT_A | VARIANT_B",
+    "assignedAt": "ISO8601",
+    "converted": "boolean",
+    "conversionValue": "number (cents, 0 if no conversion)"
+  }
+  ```
+labels:
+  - ab_testing
+  - experimentation
+  - feature_flags
+  - product_development
+  - domain_definition

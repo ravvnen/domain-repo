@@ -1,0 +1,112 @@
+item_id: recommendations.personalization
+title: Product Recommendation Engine Rules
+content: |
+  **Recommendation Types:**
+
+  **1. "You May Also Like" (Collaborative Filtering):**
+  - **Algorithm:** Users who bought X also bought Y
+  - **Data:** Purchase history across all customers
+  - **Example:** Customer viewing laptop → recommend laptop case, mouse, USB drive
+  - **Placement:** Product page (below description)
+  - **Count:** 4-8 recommendations
+
+  **2. "Frequently Bought Together" (Item Association):**
+  - **Algorithm:** Items purchased in same transaction (association rules)
+  - **Example:** Phone + phone case + screen protector
+  - **Placement:** Product page (near Add to Cart button)
+  - **Bundle discount:** "Buy all 3 together and save 10%"
+
+  **3. "Recently Viewed" (User History):**
+  - **Data:** Customer's browsing history (last 20 products viewed)
+  - **Placement:** Homepage, cart page
+  - **Expiration:** Clear after 30 days of inactivity
+
+  **4. "Recommended for You" (Personalized):**
+  - **Algorithm:** Hybrid (collaborative filtering + content-based + purchase history)
+  - **Factors:**
+     - Past purchases (e.g., bought running shoes → recommend running gear)
+     - Browsing behavior (e.g., viewed many "blue shirts" → recommend blue items)
+     - Customer segment (e.g., VIP customers → premium products)
+  - **Placement:** Homepage, email campaigns
+
+  **5. "Trending Now" (Popularity):**
+  - **Algorithm:** Most-viewed + most-purchased in past 7 days
+  - **Filters:** Category-specific (e.g., "Trending in Electronics")
+  - **Placement:** Homepage, category pages
+
+  **6. "Complete the Look" (Fashion-Specific):**
+  - **Algorithm:** Stylist-curated OR AI vision (outfit matching)
+  - **Example:** Customer viewing dress → recommend shoes, handbag, jewelry
+  - **Placement:** Product page (fashion categories only)
+
+  **Recommendation Ranking Factors:**
+
+  ```python
+  def recommendation_score(product, user):
+      score = 0
+
+      # Collaborative filtering score (0-100)
+      score += collaborative_similarity(product, user.past_purchases) * 0.4
+
+      # Content similarity (category, brand, price range)
+      score += content_similarity(product, user.preferences) * 0.3
+
+      # Popularity (trending items get boost)
+      score += popularity_score(product) * 0.2
+
+      # Inventory (don't recommend out-of-stock items)
+      if product.in_stock:
+          score += 10
+      else:
+          score -= 50  # heavy penalty
+
+      # Price (within user's typical spending range)
+      if user.avg_order_value * 0.5 <= product.price <= user.avg_order_value * 2:
+          score += 5
+
+      # Recency (newer products get slight boost)
+      if product.created_at > 30_days_ago:
+          score += 3
+
+      return score
+  ```
+
+  **Personalization Privacy:**
+  - **Opt-out:** Allow customers to disable personalized recommendations
+  - **Data retention:** Delete browsing history after 90 days (GDPR)
+  - **Transparency:** "Why am I seeing this? Based on your recent views of [Category]"
+
+  **A/B Test Results (from Acme Corp):**
+  - "You May Also Like" → +15% cross-sell rate
+  - "Frequently Bought Together" → +22% bundle purchase rate
+  - "Recommended for You" → +8% homepage conversion
+
+  **Cold Start Problem (New Customers):**
+  - **No purchase history?** → Use popularity-based recommendations (trending items)
+  - **After first purchase:** → Switch to collaborative filtering
+
+  **Event Payload Example:**
+  ```json
+  {
+    "recommendationId": "UUID",
+    "customerId": "UUID",
+    "recommendationType": "enum: YOU_MAY_LIKE | FREQUENTLY_BOUGHT | RECENTLY_VIEWED | RECOMMENDED_FOR_YOU",
+    "products": [
+      {
+        "productId": "UUID",
+        "score": "number (0-100)",
+        "rank": "number (1, 2, 3...)"
+      }
+    ],
+    "displayedAt": "ISO8601",
+    "clicked": "boolean",
+    "purchased": "boolean"
+  }
+  ```
+labels:
+  - recommendations
+  - personalization
+  - machine_learning
+  - cross_sell
+  - upsell
+  - domain_definition

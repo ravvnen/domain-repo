@@ -1,0 +1,87 @@
+item_id: international.customs_declaration
+title: International Shipping Customs Rules
+content: |
+  **Customs Declaration Requirements (for cross-border shipments):**
+
+  **Required Information:**
+
+  1. **Commercial Invoice:**
+     - Itemized list of products with HS codes (Harmonized System)
+     - Accurate declared value (CANNOT undervalue to avoid duties)
+     - Country of origin for each item
+     - Quantity and unit price
+
+  2. **HS Code (Tariff Classification):**
+     - 6-10 digit code that categorizes product for customs
+     - Example: "640391" = Leather shoes, covering ankle"
+     - Wrong HS code → shipment held at customs → delay
+
+  3. **Incoterms (Delivery Terms):**
+     - **DDP (Delivered Duty Paid):** Seller pays all duties/taxes → customer pays nothing extra
+     - **DDU (Delivered Duty Unpaid):** Customer pays duties/taxes on delivery → can cause delivery refusal
+
+  **Customs Duties and Taxes:**
+
+  ```
+  Total Landed Cost = Product Cost + Shipping + Customs Duty + Import VAT
+  ```
+
+  - **Customs Duty:** Percentage of product value (varies by HS code and destination country)
+     - Example: Importing shoes to EU = 12% duty
+  - **Import VAT:** Charged on (Product + Shipping + Duty)
+     - EU countries: 19%-27% VAT
+     - UK: 20% VAT
+
+  **De Minimis Thresholds (duty-free thresholds):**
+
+  | Country | Threshold | Notes |
+  |---------|-----------|-------|
+  | USA | $800 | Orders <$800 enter duty-free |
+  | EU | €150 | Orders <€150 pay VAT only (no duty) |
+  | UK | £135 | Orders <£135 are duty-free (VAT still applies) |
+  | Canada | CAD $20 | Orders <$20 are duty-free |
+  | Australia | AUD $1000 | Orders <$1000 are duty-free |
+
+  **Restricted/Prohibited Items (cannot ship internationally):**
+  - Lithium batteries (restricted, requires special handling)
+  - Cosmetics with alcohol (prohibited to some countries)
+  - Food products (requires import permits for most countries)
+
+  **Customs Hold (shipment stuck at customs):**
+  - Notify customer immediately (email + tracking update)
+  - Provide instructions to resolve (usually requires proof of value or correct HS code)
+  - If held >14 days → shipment returned to sender → issue refund
+
+  **IOSS (EU only, since July 2021):**
+  - For orders <€150 to EU, register for IOSS (Import One-Stop Shop)
+  - Collect VAT at checkout → remit monthly to EU
+  - Customer does NOT pay VAT on delivery → faster clearance
+
+  **Event Payload Example:**
+  ```json
+  {
+    "shipmentId": "UUID",
+    "destinationCountry": "string (ISO 3166-1 alpha-2)",
+    "incoterms": "enum: DDP | DDU",
+    "commercialInvoice": {
+      "items": [
+        {
+          "sku": "string",
+          "description": "string",
+          "hsCode": "string (6-10 digits)",
+          "quantity": "number",
+          "unitValue": "number (USD cents)",
+          "countryOfOrigin": "string (ISO code)"
+        }
+      ],
+      "totalValue": "number (USD cents)"
+    },
+    "estimatedDuty": "number (cents)",
+    "estimatedVAT": "number (cents)"
+  }
+  ```
+labels:
+  - international_shipping
+  - customs
+  - compliance
+  - domain_definition

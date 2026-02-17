@@ -1,0 +1,48 @@
+item_id: order.customer_created
+title: CustomerCreated vs CustomerRegistered
+content: |
+  **CRITICAL DISTINCTION:** CustomerCreated ≠ CustomerRegistered
+
+  **CustomerCreated Event:**
+  - **When:** User completes guest checkout (no account creation)
+  - **Payload:**
+    ```json
+    {
+      "customerId": "string (UUID)",
+      "email": "string",
+      "orderIds": ["string (UUID)"],
+      "createdAt": "ISO8601",
+      "accountType": "GUEST"
+    }
+    ```
+  - **Lifecycle:** Temporary customer record, may be converted later
+
+  **CustomerRegistered Event:**
+  - **When:** User creates an account (sets password, agrees to terms)
+  - **Payload:**
+    ```json
+    {
+      "customerId": "string (UUID)",
+      "email": "string",
+      "hashedPassword": "string (bcrypt)",
+      "registeredAt": "ISO8601",
+      "accountType": "REGISTERED",
+      "marketingConsent": "boolean"
+    }
+    ```
+  - **Lifecycle:** Permanent customer record, can place future orders
+
+  **Why the distinction matters:**
+  - GUEST customers: Send order-specific emails only (no marketing)
+  - REGISTERED customers: Can receive promotional emails, order history, saved addresses
+  - Analytics: Track conversion rate from Guest → Registered
+
+  **Real bug example at Acme Corp (Q3 2024):**
+  - Dev A thought "CustomerCreated" meant registered account
+  - Dev B knew it could be guest checkout
+  - Marketing emails sent to guest customers → GDPR violation → €10K fine
+labels:
+  - order_management
+  - events
+  - customer_lifecycle
+  - domain_definition

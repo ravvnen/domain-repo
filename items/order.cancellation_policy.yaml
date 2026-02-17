@@ -1,0 +1,51 @@
+item_id: order.cancellation_policy
+title: Order Cancellation Policy Rules
+content: |
+  **Cancellation Eligibility Windows:**
+
+  1. **CREATED → PAYMENT_AUTHORIZED (≤ 24 hours):**
+     - Customer can cancel instantly via UI
+     - Refund: Full refund (payment never captured)
+     - Inventory: Release reservation immediately
+
+  2. **READY_TO_FULFILL → PICKING (≤ 2 hours):**
+     - Customer can request cancellation
+     - Requires manual approval from warehouse manager
+     - Refund: Full refund if approved
+     - SLA: Respond within 1 hour
+
+  3. **PACKING → SHIPPED:**
+     - **Cannot cancel** (too late, package already shipped)
+     - Customer must wait for delivery, then initiate return
+
+  4. **IN_TRANSIT → DELIVERED:**
+     - **Cannot cancel**
+     - Customer can refuse delivery (treated as immediate return)
+
+  **Automated Cancellation Scenarios:**
+
+  - Payment authorization expires (7 days) → Auto-cancel + notify customer
+  - Inventory unavailable after 48 hours → Auto-cancel + refund + notify
+  - Fraudulent order detected → Immediate cancel + block customer ID
+
+  **Cancellation Event Payload:**
+  ```json
+  {
+    "orderId": "string (UUID)",
+    "cancellationReason": "enum: CUSTOMER_REQUEST | PAYMENT_FAILED | INVENTORY_UNAVAILABLE | FRAUD_DETECTED",
+    "cancelledAt": "ISO8601",
+    "cancelledBy": "string (customerId or 'SYSTEM')",
+    "refundAmount": "number",
+    "refundMethod": "enum: ORIGINAL_PAYMENT | STORE_CREDIT"
+  }
+  ```
+
+  **CRITICAL:**
+  - Always emit `OrderCancelled` event (even for auto-cancellations)
+  - Refund service listens to this event (do NOT call refund API directly)
+  - Inventory service listens to release reservations
+labels:
+  - order_management
+  - cancellation
+  - business_rules
+  - domain_definition

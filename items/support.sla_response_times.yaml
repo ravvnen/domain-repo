@@ -1,0 +1,84 @@
+item_id: support.sla_response_times
+title: Customer Support SLA Response Times
+content: |
+  **Support Ticket Priority Levels:**
+
+  | Priority | Definition | First Response SLA | Resolution SLA |
+  |----------|------------|-------------------|----------------|
+  | **P1 (Critical)** | Order not received, payment charged twice | 1 hour | 4 hours |
+  | **P2 (High)** | Wrong item shipped, refund not processed | 4 hours | 24 hours |
+  | **P3 (Medium)** | Tracking not updated, promo code not working | 8 hours | 48 hours |
+  | **P4 (Low)** | General inquiry, product question | 24 hours | 72 hours |
+
+  **Auto-Prioritization Rules:**
+
+  - **Keywords → P1:**
+     - "charged twice", "double charge", "fraud", "emergency"
+  - **Keywords → P2:**
+     - "wrong item", "damaged", "refund", "where is my order"
+  - **Keywords → P3:**
+     - "tracking", "promo code", "discount"
+  - **Default:** P4
+
+  **Escalation Rules:**
+
+  - **If ticket not responded to within SLA:**
+     - Auto-escalate to manager
+     - Notify via Slack + email
+     - Manager must respond within 50% of original SLA (e.g., P3 = 8 hours → manager has 4 hours)
+
+  - **If customer replies "Not satisfied" after resolution:**
+     - Auto-escalate to senior support specialist
+     - Offer compensation (discount code, store credit)
+
+  **After-Hours Support:**
+
+  - **Standard hours:** 9 AM - 9 PM ET (Mon-Fri), 10 AM - 6 PM ET (Sat-Sun)
+  - **After hours:** Chatbot handles P4 queries, urgent tickets queued for next day
+  - **Exception:** P1 (Critical) → on-call support 24/7 (paged via PagerDuty)
+
+  **Support Channels (SLA applies to all):**
+
+  1. **Email:** support@example.com
+  2. **Live Chat:** Website chatbot → human escalation
+  3. **Phone:** 1-800-SUPPORT (for P1/P2 only)
+  4. **Social Media:** Twitter/Facebook DM (P3/P4)
+
+  **Customer Satisfaction (CSAT) Tracking:**
+
+  - After ticket closed → send survey: "How satisfied are you with this resolution? (1-5)"
+  - **Target CSAT:** ≥4.5/5.0
+  - If CSAT <3.0 → auto-reopen ticket for manager review
+
+  **Self-Service Knowledge Base:**
+
+  - FAQs auto-suggested based on ticket keywords
+  - If customer marks FAQ as "Helpful" → auto-close ticket (with confirmation)
+  - **Deflection Rate Target:** 40% (40% of tickets resolved without agent)
+
+  **Banned Customers (fraud/abuse):**
+
+  - If customer files >10 chargebacks → ban from placing orders
+  - If customer abusive to support staff (profanity, threats) → escalate to legal
+
+  **Event Payload Example:**
+  ```json
+  {
+    "ticketId": "UUID",
+    "customerId": "UUID",
+    "priority": "enum: P1 | P2 | P3 | P4",
+    "channel": "enum: EMAIL | LIVE_CHAT | PHONE | SOCIAL",
+    "subject": "string",
+    "createdAt": "ISO8601",
+    "firstResponseAt": "ISO8601 (null if not yet responded)",
+    "resolvedAt": "ISO8601 (null if not yet resolved)",
+    "slaBreach": "boolean",
+    "escalated": "boolean",
+    "csatScore": "number (1-5, null if not rated)"
+  }
+  ```
+labels:
+  - customer_support
+  - sla
+  - ticket_management
+  - domain_definition

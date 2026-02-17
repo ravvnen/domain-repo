@@ -1,0 +1,119 @@
+item_id: live_shopping.livestream_events
+title: Live Shopping Event Rules
+content: |
+  **Live Shopping Definition:**
+  - **What:** Real-time video stream where host showcases products
+  - **Where:** Website, mobile app, or social media (Instagram Live, TikTok Live)
+  - **Duration:** Typically 30-60 minutes
+  - **Goal:** Drive impulse purchases through interactive engagement
+
+  **Live Shopping Event Structure:**
+
+  **1. Pre-Event (1 week before):**
+  - **Promotion:**
+     - Email blast to customer list
+     - Social media teasers (Instagram Stories, TikTok)
+     - Website banner: "Join us for Live Shopping on [Date] at [Time]"
+  - **Product Selection:**
+     - 8-12 products featured (limited SKUs for focus)
+     - Mix of bestsellers + new arrivals
+     - Exclusive live-only discounts (10-30% off)
+
+  **2. During Event:**
+
+  **Host Responsibilities:**
+  - Demonstrate products (unboxing, try-on, feature highlights)
+  - Answer questions in real-time (chat moderation)
+  - Create urgency: "Only 10 units left at this price!"
+  - Offer flash deals: "Next 5 buyers get free shipping!"
+
+  **Viewer Actions:**
+  - **Chat:** Ask questions, react with emojis
+  - **Buy Now:** Click product → add to cart → checkout (without leaving stream)
+  - **Share:** Share stream link to social media (referral tracking)
+
+  **Flash Deal Mechanics:**
+  - **Announcement:** "For the next 5 minutes: 30% off this item!"
+  - **Countdown Timer:** Visible on screen
+  - **Limited Quantity:** "Only 20 units at this price"
+  - **Urgency:** Auto-revert to regular price after timer expires
+
+  **3. Post-Event (1 hour after):**
+  - **Replay Available:** Archive stream for 48 hours (on-demand viewing)
+  - **Abandoned Cart Recovery:** Email to viewers who didn't purchase
+  - **Analytics:** Track conversion rate, average order value, engagement metrics
+
+  **Technical Requirements:**
+
+  **Streaming Infrastructure:**
+  - **Platform:** AWS IVS (Interactive Video Service) or similar
+  - **Latency:** <5 seconds (low-latency streaming)
+  - **Chat:** WebSocket for real-time comments
+  - **Buy Button:** Overlay on video player (clickable product cards)
+
+  **Inventory Management:**
+  - **Real-time sync:** Decrement inventory as purchases occur (prevent overselling)
+  - **Reserve on click:** When viewer clicks "Buy Now", soft-reserve for 10 minutes
+  - **Fallback:** If item sells out mid-stream → host announces + offers substitute
+
+  **Moderation:**
+  - **Chat filter:** Auto-block profanity, spam, links
+  - **Human moderator:** Monitor chat, pin important questions
+  - **Banned behaviors:** Competitor mentions, inappropriate comments
+
+  **Pricing Rules:**
+
+  **Live-Only Discounts:**
+  - **Duration:** Only active during live stream (not replay)
+  - **Example:** "30% off ONLY during this stream - code: LIVE30"
+
+  **Flash Deals:**
+  - **Trigger:** Host announces verbally
+  - **Backend:** Admin clicks "Activate Flash Deal" → price drops for N minutes
+  - **Expiration:** Auto-revert after timer ends
+
+  **Legal Compliance:**
+  - **Disclosures:** If influencer is paid, disclose: "Paid partnership with [Brand]"
+  - **FTC Rules:** No false scarcity ("Only 2 left!" when actually 200 in stock)
+
+  **Metrics (Success Indicators):**
+  - **Conversion rate:** Viewers → buyers (target: 5-10%)
+  - **Average order value:** Target: $100+
+  - **Engagement rate:** Comments per viewer (target: 2+)
+  - **Peak concurrent viewers:** Target: 500+
+
+  **Event Payload Example:**
+  ```json
+  {
+    "liveEventId": "UUID",
+    "title": "string (e.g., 'Summer Fashion Show')",
+    "startTime": "ISO8601",
+    "endTime": "ISO8601",
+    "host": "string (host name or employee ID)",
+    "featuredProducts": [
+      {
+        "productId": "UUID",
+        "livePrice": "number (cents, discounted)",
+        "regularPrice": "number (cents)",
+        "unitsAvailable": "number",
+        "unitsSold": "number"
+      }
+    ],
+    "viewerStats": {
+      "peakConcurrent": "number",
+      "totalUniqueViewers": "number",
+      "averageWatchTime": "number (seconds)"
+    },
+    "salesStats": {
+      "totalOrders": "number",
+      "totalRevenue": "number (cents)",
+      "conversionRate": "number (decimal)"
+    }
+  }
+  ```
+labels:
+  - live_shopping
+  - livestream
+  - social_commerce
+  - flash_deals
+  - domain_definition

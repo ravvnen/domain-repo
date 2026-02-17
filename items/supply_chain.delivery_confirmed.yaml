@@ -1,0 +1,37 @@
+item_id: supply_chain.delivery_confirmed
+title: DeliveryConfirmed Event Definition
+content: |
+  **Event Name:** DeliveryConfirmed
+
+  **When to emit:** When customer (or authorized recipient) physically signs for package delivery.
+
+  **Payload Schema:**
+  ```json
+  {
+    "orderId": "string (UUID)",
+    "shipmentId": "string (UUID)",
+    "deliveryTimestamp": "ISO8601 datetime",
+    "recipientName": "string",
+    "signatureImageUrl": "string (S3 URL)",
+    "deliveryLocation": "enum: FRONT_DOOR | MAILROOM | NEIGHBOR | OFFICE",
+    "gpsCoordinates": {
+      "latitude": "number",
+      "longitude": "number"
+    }
+  }
+  ```
+
+  **Critical distinction from ShipmentConfirmed:**
+  - ShipmentConfirmed = package left warehouse → "In Transit"
+  - DeliveryConfirmed = package received by customer → "Delivered"
+
+  **Downstream effects:**
+  - Order Service: Mark order as "Delivered" (terminal state)
+  - Billing Service: Trigger final payment capture (if using auth-capture flow)
+  - Returns Service: Start 30-day return window countdown
+  - Customer Service: Enable post-delivery survey
+labels:
+  - supply_chain
+  - events
+  - delivery
+  - domain_definition

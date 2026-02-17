@@ -1,0 +1,94 @@
+item_id: referral.customer_referrals
+title: Customer Referral Program Rules
+content: |
+  **Referral Program Structure:**
+
+  **Incentive Model:** "Give $20, Get $20"
+  - **Referrer (existing customer):** Gets $20 store credit when friend makes first purchase
+  - **Referee (new customer):** Gets $20 off first order (minimum $50 purchase)
+
+  **How It Works:**
+
+  1. **Referrer shares unique link:**
+     - URL: `https://example.com?ref=ALICE123`
+     - Shareable via: Email, SMS, Facebook, Twitter
+
+  2. **Referee clicks link & creates account:**
+     - Cookie set: `referrer_id=ALICE123` (30-day expiration)
+     - $20 discount auto-applied at checkout (for first order only)
+
+  3. **Referee completes first order:**
+     - Order must be ≥$50 (before discount)
+     - Order must reach DELIVERED state (not just CREATED)
+     - Emit `ReferralConversion` event
+
+  4. **Referrer receives reward:**
+     - $20 store credit added to account
+     - Email notification: "Your friend [FirstName] just made their first purchase! Here's your $20 credit."
+     - Credit valid for 12 months
+
+  **Limits and Restrictions:**
+
+  - **Max referrals per customer:** Unlimited (but monitored for fraud)
+  - **Min order value for referee:** $50 (prevents abuse with cheap items)
+  - **Reward timing:** Credited after 14-day return window (to prevent return fraud)
+
+  **Fraud Prevention:**
+
+  **Red Flags:**
+  1. **Self-referral:** Same customer creating multiple accounts to refer themselves
+     - Detection: Same shipping address, IP address, payment method
+     - Action: Void referral credit, warn customer
+
+  2. **Referral rings:** Group of customers referring each other in a loop
+     - Detection: Graph analysis (A→B→C→A)
+     - Action: Flag for manual review
+
+  3. **Fake accounts:** Referrer creates fake friend accounts, places orders, returns items
+     - Detection: High return rate (>80%) for referred customers
+     - Action: Ban referrer from program
+
+  **Referral Attribution (if referee used multiple sources):**
+
+  **Scenario:** Referee saw Facebook ad, then clicked referral link, then searched Google
+
+  **Attribution Rule:** **Last-touch attribution** (referral link wins)
+  - Referral cookie overwrites other attribution cookies
+  - Referrer gets credit even if referee found site via other channel first
+
+  **Referral Dashboard (for referrers):**
+  - **Metrics shown:**
+     - Total referrals sent: 15
+     - Successful conversions: 8 (53% conversion rate)
+     - Total credit earned: $160
+     - Pending credit (orders not delivered yet): $40
+
+  **Referral Program Tiers (for power users):**
+
+  | Tier | Successful Referrals | Bonus Reward |
+  |------|----------------------|--------------|
+  | Standard | 1-4 | $20 per referral |
+  | Silver | 5-9 | $25 per referral |
+  | Gold | 10-19 | $30 per referral |
+  | Platinum | 20+ | $40 per referral + VIP status |
+
+  **Event Payload Example:**
+  ```json
+  {
+    "referralId": "UUID",
+    "referrerId": "UUID (existing customer)",
+    "refereeId": "UUID (new customer)",
+    "referralCode": "string (e.g., 'ALICE123')",
+    "clickedAt": "ISO8601",
+    "convertedAt": "ISO8601 (when first order delivered)",
+    "rewardAmount": "number (cents, e.g., 2000 for $20)",
+    "rewardStatus": "enum: PENDING | CREDITED | VOIDED",
+    "fraudCheckPassed": "boolean"
+  }
+  ```
+labels:
+  - referrals
+  - customer_acquisition
+  - word_of_mouth
+  - growth
+  - domain_definition

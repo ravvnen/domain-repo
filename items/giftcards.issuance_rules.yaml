@@ -1,0 +1,94 @@
+item_id: giftcards.issuance_rules
+title: Gift Card Issuance and Redemption Rules
+content: |
+  **Gift Card Types:**
+
+  **1. Physical Gift Cards:**
+  - Shipped like a product (counts toward order total for free shipping threshold)
+  - Activated upon shipment (not at purchase)
+  - Can be reloaded at checkout
+
+  **2. Digital Gift Cards (E-Gift):**
+  - Delivered via email immediately or scheduled date
+  - Activated immediately upon purchase
+  - Cannot be reloaded
+
+  **Issuance Rules:**
+
+  - **Denominations:** $10, $25, $50, $100, $250 (custom amounts allowed for B2B)
+  - **Expiration:** **NO expiration** (illegal in CA, many other states)
+  - **Inactivity fee:** None (also illegal in most states)
+
+  **Redemption Rules:**
+
+  **Applying Gift Card:**
+  - Customer enters gift card code at checkout
+  - Deduct from order total BEFORE applying promo codes
+  - If order total < gift card balance → remaining balance stays on card
+
+  **Example:**
+  ```
+  Order total: $75
+  Gift card balance: $100
+  After redemption:
+    - Order total: $0 (paid by gift card)
+    - Remaining gift card balance: $25
+  ```
+
+  **Partial Redemption:**
+  - ✅ Allowed: Customer can use $50 from a $100 gift card
+  - Remaining $50 stays on card
+
+  **Combining Payment Methods:**
+  - ✅ Can combine: Gift card + credit card (if gift card doesn't cover full amount)
+  - ✅ Can stack: Multiple gift cards on same order
+  - ❌ Cannot combine: Gift card + promo codes that say "cannot be used with gift cards"
+
+  **Refunds and Gift Cards:**
+
+  **Scenario 1: Order paid FULLY with gift card**
+  - Refund goes back to original gift card
+  - Gift card balance increases
+
+  **Scenario 2: Order paid PARTIALLY with gift card**
+  - Refund split proportionally:
+     - Gift card portion → back to gift card
+     - Credit card portion → back to credit card
+
+  **Fraud Prevention:**
+
+  - **Check card status before redemption:**
+     - Not expired (if state allows expiration)
+     - Not reported stolen
+     - Not already fully redeemed
+
+  - **Rate limiting:**
+     - Max 10 gift card redemption attempts per hour per IP
+     - Prevents brute-force code guessing
+
+  - **High-Value Gift Cards (>$500):**
+     - Require identity verification for redemption
+     - Flag for manual review if redeemed within 24 hours of purchase
+
+  **Event Payload Example:**
+  ```json
+  {
+    "giftCardId": "UUID",
+    "code": "string (redacted in logs, e.g., 'XXXX-XXXX-1234')",
+    "initialBalance": "number (cents)",
+    "currentBalance": "number (cents)",
+    "issuedAt": "ISO8601",
+    "redeemedTransactions": [
+      {
+        "orderId": "UUID",
+        "amountUsed": "number (cents)",
+        "redeemedAt": "ISO8601"
+      }
+    ]
+  }
+  ```
+labels:
+  - gift_cards
+  - payment_methods
+  - business_rules
+  - domain_definition

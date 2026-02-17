@@ -1,0 +1,69 @@
+item_id: payment.auth_capture_flow
+title: Payment Authorization vs Capture
+content: |
+  **Two-Phase Payment Flow:**
+
+  **Phase 1: Authorization (at checkout)**
+  - Validates card is valid and has sufficient funds
+  - Places a "hold" on customer's account
+  - Does NOT transfer money yet
+  - Authorization expires after 7 days (varies by card network)
+
+  **Phase 2: Capture (at shipment)**
+  - Actually transfers money from customer to merchant
+  - Can only capture ≤ authorized amount
+  - Must happen within authorization window (≤ 7 days)
+
+  **When to Authorize:**
+  - Trigger: Customer clicks "Place Order"
+  - Event: `PaymentAuthorized`
+  - State transition: CREATED → PAYMENT_AUTHORIZED
+
+  **When to Capture:**
+  - Trigger: Order reaches SHIPPED state (package handed to carrier)
+  - Event: `PaymentCaptured`
+  - State transition: PAYMENT_AUTHORIZED → READY_TO_FULFILL
+
+  **Why NOT capture immediately?**
+  - Inventory might be out of stock → need to cancel order
+  - Fraud check might fail → need to void authorization
+  - Customer cancels before shipment → easier to void auth than refund capture
+
+  **Edge Cases:**
+
+  1. **Authorization expires before shipment (>7 days):**
+     - Re-authorize card before capture
+     - If re-auth fails → cancel order + notify customer
+
+  2. **Partial shipments:**
+     - Capture proportional amount per shipment
+     - Example: Order $100, ship 50% → capture $50, hold $50 auth
+
+  3. **Price changes after authorization:**
+     - ❌ Cannot capture MORE than authorized amount
+     - ✅ Can capture LESS (e.g., price drop, coupon applied late)
+
+  **Event Payloads:**
+  ```json
+  // PaymentAuthorized
+  {
+    "orderId": "UUID",
+    "authorizationId": "string (from payment gateway)",
+    "authorizedAmount": "number (cents)",
+    "expiresAt": "ISO8601 (auth + 7 days)",
+    "paymentMethod": "enum: CREDIT_CARD | DEBIT_CARD | DIGITAL_WALLET"
+  }
+
+  // PaymentCaptured
+  {
+    "orderId": "UUID",
+    "captureId": "string",
+    "capturedAmount": "number (cents)",
+    "capturedAt": "ISO8601",
+    "authorizationId": "string (references original auth)"
+  }
+  ```
+labels:
+  - payment_processing
+  - business_rules
+  - domain_definition

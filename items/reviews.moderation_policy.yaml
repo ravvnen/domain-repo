@@ -1,0 +1,113 @@
+item_id: reviews.moderation_policy
+title: Customer Review Moderation Policy
+content: |
+  **Review Submission Rules:**
+
+  **Eligibility:**
+  - ✅ Must be verified purchaser (bought product from our store)
+  - ❌ Cannot review if:
+     - Order was cancelled or refunded
+     - Product returned (unless review mentions return)
+     - Employee of company (conflict of interest)
+
+  **Review Window:**
+  - **Open:** 7 days after delivery
+  - **Close:** 90 days after delivery (reviews too old become irrelevant)
+  - **Exception:** Can always review if requesting return/refund
+
+  **Review Components:**
+
+  1. **Star Rating (required):** 1-5 stars
+  2. **Title (optional):** Max 60 characters (e.g., "Great quality, fits perfectly!")
+  3. **Review Text (required):** Min 20 characters, max 5000 characters
+  4. **Photos/Videos (optional):** Max 5 images, max 1 video (30 seconds)
+  5. **Recommended? (required):** Yes/No
+
+  **Automated Moderation (AI Pre-Filter):**
+
+  **Reject Immediately If:**
+  - Contains profanity (shit, fuck, etc.) → auto-flag for manual review
+  - Contains personal info (email, phone number, address) → privacy violation
+  - Contains competitor mentions ("Buy from Amazon instead") → promotional spam
+  - Contains external links → spam
+  - All caps (e.g., "THIS IS THE WORST PRODUCT EVER") → shouting
+
+  **Flag for Manual Review If:**
+  - Sentiment analysis shows extreme negativity (1-star with no constructive feedback)
+  - Mentions safety issues ("Product caught fire", "Caused injury")
+  - Potential fake review (account created same day as review)
+
+  **Manual Moderation (Human Review):**
+
+  **Approve If:**
+  - Verified purchase
+  - Constructive feedback (even if negative)
+  - No policy violations
+
+  **Reject If:**
+  - Fake review (incentivized, paid, or fabricated)
+  - Off-topic (e.g., reviewing shipping speed, not product)
+  - Hate speech, discrimination
+  - Competitor attack (e.g., "Brand X is better")
+
+  **Borderline Cases:**
+  - **Negative but constructive:** APPROVE (e.g., "Product broke after 1 month, but customer service replaced it")
+  - **Profanity in context:** APPROVE with asterisks (e.g., "This shirt is f***ing amazing!")
+  - **Competitor mention as comparison:** APPROVE (e.g., "Better than Nike, cheaper than Adidas")
+
+  **Review Incentives (Allowed):**
+  - ✅ Email request: "Please review your recent purchase" (no incentive)
+  - ✅ Loyalty points: "+50 points for writing a review" (allowed by FTC)
+  - ❌ Discount codes: "Get 20% off your next order if you leave 5-star review" (FTC violation - biased reviews)
+
+  **Responding to Reviews (Vendor Replies):**
+
+  - **Positive reviews (4-5 stars):** "Thank you for your feedback!"
+  - **Negative reviews (1-2 stars):**
+     - Acknowledge issue
+     - Offer solution (replacement, refund, store credit)
+     - Do NOT argue or be defensive
+
+  **Example Response to 1-Star Review:**
+  ```
+  "We're sorry to hear about your experience. This is not the quality we expect.
+  Please contact us at support@example.com so we can make this right with a
+  full refund or replacement. Thank you for bringing this to our attention."
+  ```
+
+  **Review Abuse (Fake Reviews):**
+
+  **Detection:**
+  - Same IP address posting multiple 5-star reviews → fake
+  - Account created same day as review → suspicious
+  - Generic review ("Great product!") with no details → likely fake
+
+  **Action:**
+  - Delete fake reviews
+  - Ban accounts involved
+  - Report to review fraud databases (e.g., Fakespot, ReviewMeta)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "reviewId": "UUID",
+    "productId": "UUID",
+    "customerId": "UUID",
+    "orderId": "UUID (verified purchase)",
+    "rating": "number (1-5)",
+    "title": "string",
+    "reviewText": "string",
+    "photos": ["string (S3 URLs)"],
+    "recommended": "boolean",
+    "submittedAt": "ISO8601",
+    "moderationStatus": "enum: PENDING | APPROVED | REJECTED",
+    "moderatedBy": "enum: AUTO | HUMAN",
+    "rejectionReason": "string (if rejected)"
+  }
+  ```
+labels:
+  - reviews
+  - moderation
+  - ugc
+  - trust_signals
+  - domain_definition

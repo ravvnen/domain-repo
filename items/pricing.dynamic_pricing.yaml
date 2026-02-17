@@ -1,0 +1,77 @@
+item_id: pricing.dynamic_pricing
+title: Dynamic Pricing Rules
+content: |
+  **Price Calculation Priority (applied in order):**
+
+  1. **Base Price:** From product catalog (`product.basePrice`)
+
+  2. **Promotional Discounts:**
+     - Flash sale: -20% (time-limited, e.g., 2 hours)
+     - Seasonal sale: -15% (holiday periods)
+     - Clearance: -30% to -70% (discontinued items)
+
+  3. **Customer Segment Discounts:**
+     - VIP customers (lifetime value >$5000): -10% on all orders
+     - First-time customers: -5% (welcome discount)
+     - Loyalty program members: -5% to -15% (tier-based)
+
+  4. **Quantity Discounts:**
+     - 2-5 units: -5%
+     - 6-10 units: -10%
+     - 11+ units: -15%
+
+  5. **Cart-Level Promotions:**
+     - Spend $100, get $10 off
+     - Buy 3, get 1 free (lowest-priced item)
+
+  **CRITICAL: Discount Stacking Rules:**
+
+  ❌ **Cannot stack:**
+  - Flash sale + Seasonal sale (only highest % discount applies)
+  - VIP discount + First-time customer discount
+
+  ✅ **Can stack:**
+  - Customer segment discount + Quantity discount
+  - Promotional discount + Cart-level promotion
+
+  **Maximum Total Discount: 50%**
+  - If calculated discount >50%, cap at 50%
+  - Exception: Clearance items can go up to 70% off
+
+  **Price Consistency Rules:**
+
+  - **Price Lock:** Once customer adds item to cart, price is locked for 10 minutes
+    - Prevents "price increased during checkout" frustration
+    - If promotion expires during checkout, honor original price
+
+  - **Price Match Guarantee:**
+    - If competitor price is lower, match it (requires proof)
+    - Valid for 7 days post-purchase (price adjustment refund)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "lineItems": [
+      {
+        "sku": "string",
+        "basePrice": "number (cents)",
+        "appliedDiscounts": [
+          {
+            "type": "enum: PROMOTIONAL | SEGMENT | QUANTITY | CART",
+            "discountPercent": "number",
+            "discountAmount": "number (cents)"
+          }
+        ],
+        "finalPrice": "number (cents)"
+      }
+    ],
+    "totalDiscount": "number (cents)",
+    "subtotal": "number (cents)"
+  }
+  ```
+labels:
+  - pricing
+  - promotions
+  - business_rules
+  - domain_definition

@@ -1,0 +1,124 @@
+item_id: voice_commerce.alexa_integration
+title: Voice Commerce and Alexa Integration Rules
+content: |
+  **Voice Commerce Channels:**
+
+  1. **Amazon Alexa:** "Alexa, order more coffee from [Brand]"
+  2. **Google Assistant:** "Hey Google, reorder my favorite shampoo"
+  3. **Apple Siri (Shortcuts):** "Hey Siri, buy dog food"
+
+  **Supported Voice Commands:**
+
+  **Product Search:**
+  - "Alexa, search for blue running shoes on [Brand]"
+  - Response: "I found 15 results. The top match is Nike Air Zoom Pegasus for $120. Would you like to hear more?"
+
+  **Reorder (Simplest Use Case):**
+  - "Alexa, reorder my last order from [Brand]"
+  - Response: "Your last order was [items]. Reordering for $75. Confirm?"
+  - User: "Yes"
+  - Response: "Order placed. Arriving Tuesday."
+
+  **Add to Cart:**
+  - "Alexa, add [Product] to my cart on [Brand]"
+  - Response: "Added [Product] to your cart. Your cart total is now $45."
+
+  **Check Order Status:**
+  - "Alexa, where is my order from [Brand]?"
+  - Response: "Your order #12345 shipped yesterday. Estimated delivery: Friday."
+
+  **Voice-Specific Challenges:**
+
+  **1. Disambiguation (Multiple Results):**
+  - User: "Alexa, buy a blue shirt"
+  - Problem: 50 blue shirts available → which one?
+  - Solution:
+     - "I found 50 blue shirts. Would you like the bestselling one for $29.99?"
+     - Or: "Text me the options" (fallback to app/SMS)
+
+  **2. Payment Confirmation:**
+  - **Security concern:** Prevent accidental purchases (kids, visitors)
+  - **Solution:** Require voice PIN or confirmation code
+     - "To complete this purchase, say your 4-digit PIN"
+     - Or: "I've sent a confirmation link to your phone. Tap to confirm."
+
+  **3. Product Details (Voice Limitations):**
+  - Problem: Can't show images, specs, reviews via voice
+  - Solution: "I'll send the product details to your Alexa app. Would you like to proceed?"
+
+  **Voice Commerce Workflows:**
+
+  **Simple Reorder (Most Common):**
+  ```
+  User: "Alexa, reorder dog food"
+  Alexa: Fetch customer's purchase history → find most recent dog food order
+  Alexa: "Reordering Purina Pro Plan 24lb bag for $48. Confirm?"
+  User: "Yes"
+  Alexa: Place order → emit OrderCreated event
+  Alexa: "Done. Arriving in 2 days."
+  ```
+
+  **Product Discovery (Complex):**
+  ```
+  User: "Alexa, I need a gift for my wife's birthday"
+  Alexa: "What's her favorite category? Fashion, beauty, or home decor?"
+  User: "Fashion"
+  Alexa: "What's your budget?"
+  User: "$50 to $100"
+  Alexa: "I recommend this cashmere scarf for $79. Want to hear more?"
+  User: "Yes"
+  Alexa: [Read description] "Add to cart?"
+  User: "Yes"
+  ```
+
+  **Voice-Exclusive Features:**
+
+  **"Subscribe & Save" via Voice:**
+  - "Alexa, subscribe me to monthly coffee deliveries"
+  - Alexa: "I'll send you [Product] every 30 days for $25. First delivery next week. Confirm?"
+
+  **Voice-Only Discounts:**
+  - "Alexa, do you have any voice-exclusive deals?"
+  - Alexa: "Yes! 10% off your next order if you complete it by voice. Say 'Activate voice deal' to apply."
+
+  **Analytics (Voice Commerce KPIs):**
+
+  | Metric | Definition | Benchmark |
+  |--------|------------|-----------|
+  | **Voice Order Rate** | Orders via voice / Total orders | 2-5% |
+  | **Reorder Rate** | Voice reorders / Voice orders | 60-80% (most common use case) |
+  | **Completion Rate** | Completed orders / Started voice sessions | 30-50% (lower than web/app) |
+  | **Average Order Value** | Revenue / Voice orders | Lower than web (impulse reorders) |
+
+  **Privacy and Security:**
+
+  - **Voice recordings:** Do NOT store voice audio (GDPR/privacy)
+  - **Transcripts:** Store text transcripts only (for customer service review)
+  - **Payment:** Require 2FA for orders >$100
+
+  **Error Handling:**
+
+  - **Misheard command:** "I didn't catch that. Can you repeat?"
+  - **Ambiguous request:** "I found multiple results. Can you be more specific?"
+  - **Product unavailable:** "Sorry, that item is out of stock. Would you like a similar alternative?"
+
+  **Event Payload Example:**
+  ```json
+  {
+    "voiceSessionId": "UUID",
+    "customerId": "UUID",
+    "voiceAssistant": "enum: ALEXA | GOOGLE | SIRI",
+    "command": "string (e.g., 'reorder coffee')",
+    "transcript": "string (full conversation)",
+    "intent": "enum: SEARCH | ADD_TO_CART | REORDER | CHECK_STATUS",
+    "orderId": "UUID (if order placed)",
+    "sessionDuration": "number (seconds)",
+    "completed": "boolean"
+  }
+  ```
+labels:
+  - voice_commerce
+  - alexa
+  - conversational_ai
+  - hands_free_shopping
+  - domain_definition

@@ -1,0 +1,97 @@
+item_id: bundles.product_bundles
+title: Product Bundle Deals Rules
+content: |
+  **Bundle Types:**
+
+  **1. Fixed Bundle:**
+  - Predefined set of products (e.g., "Gaming Starter Kit")
+  - Components: Console + 2 games + controller
+  - Price: $450 (vs. $500 if bought separately)
+  - Cannot customize (all-or-nothing)
+
+  **2. Mix-and-Match Bundle:**
+  - Customer chooses N products from a category
+  - Example: "Pick 3 T-Shirts for $50" (normally $25 each)
+  - Rules: Must select exactly 3, all must be from "T-Shirts" category
+
+  **3. Buy X Get Y (BOGO):**
+  - "Buy 2, Get 1 Free" (lowest-priced item free)
+  - "Buy $100, Get $20 Free Product" (customer picks from eligible items)
+
+  **Bundle Pricing Logic:**
+
+  **Fixed Bundle:**
+  ```
+  bundlePrice = $450 (set by merchandiser)
+  discount = (sum of individual prices) - bundlePrice
+          = ($200 + $120 + $120 + $60) - $450
+          = $50 discount
+  ```
+
+  **Mix-and-Match:**
+  ```
+  regular price per item = $25
+  bundle price = $50 for 3 items
+  effective price per item = $16.67
+  discount per item = $25 - $16.67 = $8.33
+  ```
+
+  **BOGO (Buy 2, Get 1 Free):**
+  ```
+  Items selected: $30, $25, $20
+  Lowest-priced item ($20) is free
+  Total: $30 + $25 + $0 = $55 (vs. $75 normally)
+  ```
+
+  **Inventory Handling for Bundles:**
+
+  - **Fixed Bundle:**
+     - Track as single SKU (e.g., `BUNDLE-GAMING-001`)
+     - When bundle sold → decrement individual component SKUs
+     - If any component out of stock → mark bundle as unavailable
+
+  - **Mix-and-Match:**
+     - No bundle SKU (dynamic combination)
+     - Check inventory of selected items at checkout
+     - Reserve all items atomically (prevent partial reservation)
+
+  **Returns for Bundles:**
+
+  - **Fixed Bundle (all-or-nothing return):**
+     - Customer MUST return ALL components to get refund
+     - Cannot return just one item from bundle
+
+  - **Mix-and-Match:**
+     - Partial returns allowed
+     - Refund recalculated based on remaining items
+     - Example: Return 1 of 3 T-Shirts → refund $16.67 (bundle price), not $25 (regular price)
+
+  **Bundle Discounts + Other Promotions:**
+
+  - ❌ Cannot stack: Bundle price + additional promo code
+     - Reason: Double discounting (too generous)
+  - ✅ Can combine: Bundle + loyalty points redemption
+  - ✅ Can combine: Bundle + free shipping promotion
+
+  **Event Payload Example:**
+  ```json
+  {
+    "bundleId": "UUID (or null for dynamic bundles)",
+    "bundleType": "enum: FIXED | MIX_AND_MATCH | BOGO",
+    "components": [
+      {
+        "sku": "string",
+        "quantity": "number",
+        "regularPrice": "number (cents)",
+        "discountAmount": "number (cents)"
+      }
+    ],
+    "bundlePrice": "number (cents)",
+    "totalSavings": "number (cents)"
+  }
+  ```
+labels:
+  - bundles
+  - promotions
+  - product_combinations
+  - domain_definition

@@ -1,0 +1,49 @@
+item_id: inventory.reservation_logic
+title: Inventory Reservation Logic
+content: |
+  **Reservation Flow:**
+
+  1. **AddToCart:**
+     - Do NOT reserve inventory (soft hold only, expires in 15 minutes)
+     - Reason: Prevents cart abandonment from blocking real buyers
+
+  2. **CheckoutStarted:**
+     - Create SOFT reservation (valid for 10 minutes)
+     - Decrement `availableQuantity` but not `physicalQuantity`
+
+  3. **PaymentAuthorized:**
+     - Convert SOFT → HARD reservation
+     - Valid until order ships (max 48 hours)
+
+  4. **OrderShipped:**
+     - Release reservation (no longer needed)
+     - Decrement `physicalQuantity` (item physically left warehouse)
+
+  **Reservation Expiration:**
+  - SOFT reservations expire after 10 minutes → auto-release
+  - HARD reservations expire after 48 hours → auto-cancel order + notify customer
+
+  **Overselling Prevention:**
+  ```sql
+  -- Always check BEFORE creating reservation:
+  SELECT availableQuantity - SUM(reservedQuantity) AS sellableStock
+  FROM inventory
+  WHERE sku = 'ABC-123'
+
+  -- Only proceed if sellableStock > requestedQuantity
+  ```
+
+  **Backorder vs Out-of-Stock:**
+  - **Out-of-Stock (OOS):** `physicalQuantity = 0`, cannot reserve
+  - **Backorder:** `physicalQuantity = 0` BUT supplier shipment expected in ≤ 14 days
+     - Allow reservation IF customer opts-in to delayed shipping
+     - Emit `BackorderCreated` event (not `OrderCreated`)
+
+  **CRITICAL Mistake to Avoid:**
+  - ❌ Reserving inventory at AddToCart → leads to "phantom unavailability"
+  - ✅ Reserve only at CheckoutStarted (user intent to purchase)
+labels:
+  - inventory_management
+  - reservation
+  - business_rules
+  - domain_definition

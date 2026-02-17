@@ -1,0 +1,99 @@
+item_id: backorder.handling_rules
+title: Backorder Handling and Customer Communication
+content: |
+  **Backorder vs Out-of-Stock:**
+
+  - **Out-of-Stock (OOS):** Product unavailable, no restock date known
+     - Action: Hide "Add to Cart" button, show "Out of Stock" badge
+     - Option: "Notify Me When Available" (email signup)
+
+  - **Backorder:** Product unavailable NOW, but restock date confirmed
+     - Action: Allow order placement with delayed shipping
+     - Display: "Available [Date], ships when restocked"
+
+  **When to Allow Backorders:**
+
+  1. **High-demand items** (e.g., new iPhone, limited edition sneakers)
+     - Customer willing to wait for guaranteed allocation
+  2. **Made-to-order products** (e.g., custom furniture)
+     - Manufacturing lead time 4-8 weeks
+  3. **Supplier confirmed restock date ≤30 days**
+     - Longer wait → too risky (customer may cancel)
+
+  **Backorder Customer Experience:**
+
+  **At Checkout:**
+  ```
+  [Warning Banner]
+  ⚠️ This item is on backorder. Expected to ship by March 15, 2024.
+  You will NOT be charged until the item ships.
+
+  [ ] I understand and want to proceed with backorder
+
+  [Place Backorder] button
+  ```
+
+  **Payment Timing:**
+  - **Option A (recommended):** Authorize card now, capture when shipped
+     - Pros: Secures inventory for customer
+     - Cons: Authorization expires after 7 days (must re-auth)
+  - **Option B:** Do NOT charge until shipped
+     - Pros: No risk of expired auth
+     - Cons: Customer's card may be declined at ship time → lose sale
+
+  **Customer Communication Cadence:**
+
+  1. **Day 0 (order placed):**
+     - Email: "Backorder confirmation, estimated ship date: March 15"
+
+  2. **Day 7:**
+     - Email: "Update: Your backorder is in production, still on track for March 15"
+
+  3. **Day 14:**
+     - Email: "Good news! Your item will ship next week"
+
+  4. **Ship Date - 3 days (if delay expected):**
+     - Email: "We're sorry, your backorder is delayed to March 22 (+7 days)"
+     - Options:
+       - [ ] Wait for new date (get 10% discount)
+       - [ ] Cancel with full refund
+
+  5. **Ship Date:**
+     - Email: "Your backorder has shipped! Tracking: [link]"
+
+  **Backorder Cancellation Policy:**
+
+  - **Before ship date - 7 days:** Free cancellation (full refund)
+  - **Ship date - 7 days to ship date:** 5% cancellation fee (restocking cost)
+  - **After shipped:** Cannot cancel (standard return policy applies)
+
+  **Inventory Allocation (if restock quantity < backorders):**
+
+  **Scenario:** 100 customers backordered, but only 80 units arrive
+
+  **Allocation Priority:**
+  1. **First-come-first-served** (backorder timestamp)
+  2. **VIP customers** get priority if tied on timestamp
+  3. **Remaining 20 customers:**
+     - Notify of delay: "Your item delayed another 2 weeks, or cancel now"
+
+  **Event Payload Example:**
+  ```json
+  {
+    "backorderId": "UUID",
+    "orderId": "UUID",
+    "productId": "UUID",
+    "sku": "string",
+    "quantityBackordered": "number",
+    "estimatedShipDate": "ISO8601",
+    "actualShipDate": "ISO8601 (null if not yet shipped)",
+    "delayDays": "number (0 if on time)",
+    "status": "enum: PENDING | SHIPPED | CANCELLED",
+    "cancellationReason": "string (if cancelled)"
+  }
+  ```
+labels:
+  - backorders
+  - inventory_management
+  - customer_communication
+  - domain_definition

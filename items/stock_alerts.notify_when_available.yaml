@@ -1,0 +1,124 @@
+item_id: stock_alerts.notify_when_available
+title: Stock Alert Notification Rules
+content: |
+  **"Notify Me When Available" Feature:**
+
+  **Trigger Points:**
+  1. **Product page:** When item is OUT_OF_STOCK, show "Notify Me" button
+  2. **Search results:** Badge: "Out of Stock - Get Notified"
+  3. **Wishlist:** Auto-enable notifications for out-of-stock wishlisted items
+
+  **Signup Flow:**
+
+  **For Guest Users:**
+  - Email input required: "Enter your email to be notified"
+  - Optional: Phone number for SMS alerts
+  - Confirmation: "Thanks! We'll email you when it's back"
+
+  **For Registered Users:**
+  - One-click signup (email already known)
+  - Preference: Email, SMS, or push notification
+
+  **Notification Timing:**
+
+  **When Product Restocks:**
+  1. **Immediate notification (within 15 minutes):**
+     - Email subject: "Good news! [Product Name] is back in stock"
+     - SMS: "[Product Name] is back! Order now: [link]"
+     - Push: "Stock alert: [Product Name] available again"
+
+  2. **Staggered notifications (if high demand):**
+     - Problem: 1000 people signed up, but only 50 units restocked
+     - Solution: Notify in batches (50 people per hour) based on signup order (first-come-first-served)
+
+  **Notification Content:**
+
+  **Email Template:**
+  ```
+  Subject: Good news! [Product Name] is back in stock
+
+  Hi [Name],
+
+  The item you requested is now available:
+
+  [Product Image]
+  [Product Name]
+  $[Price]
+
+  [Shop Now Button]
+
+  Hurry - limited stock available!
+
+  This is a one-time notification. You will not be emailed again unless
+  you sign up for another stock alert.
+  ```
+
+  **Urgency Signals:**
+  - "Only [N] units available" (if low stock <20)
+  - "High demand - may sell out soon"
+  - "Reserved for you for 24 hours" (if implementing reservation)
+
+  **Expiration and Cleanup:**
+
+  - **Auto-remove after notification sent** (one-time alert)
+  - **Opt-in for repeat alerts:** "Notify me again if this goes out of stock"
+  - **Auto-expire waitlist after 90 days:** If product never restocks, delete stale alerts
+
+  **Waitlist Priority (Optional Enhancement):**
+
+  **Scenario:** 1000 people on waitlist, but only 50 units restocked
+
+  **Prioritization:**
+  1. **VIP customers** (top 10% by LTV)
+  2. **First-come-first-served** (signup timestamp)
+  3. **Offer backorder to remaining 950:** "We'll restock in 14 days - reserve now?"
+
+  **Analytics:**
+
+  - **Waitlist conversion rate:** (Purchases after notification) / (Notifications sent)
+     - **Benchmark:** 20-30% conversion rate
+  - **Demand forecasting:** If >500 signups, consider ordering more inventory
+
+  **A/B Test Results (from Acme Corp):**
+  - Stock alerts → 25% conversion rate (1 in 4 notified customers purchase)
+  - Revenue per notification: $18 (considering 25% conversion * $72 AOV)
+
+  **Multi-Variant Notifications:**
+
+  **Scenario:** Customer wants "Blue T-Shirt, Size M" but only "Blue, Size L" restocks
+
+  **Smart Notification:**
+  ```
+  Subject: Update on your stock alert
+
+  Hi [Name],
+
+  The Blue T-Shirt is back in stock in Size L (you requested Size M).
+
+  Would you like to purchase Size L instead, or wait for Size M?
+
+  [Buy Size L] [Wait for Size M]
+  ```
+
+  **Event Payload Example:**
+  ```json
+  {
+    "stockAlertId": "UUID",
+    "productId": "UUID",
+    "variantId": "UUID (if multi-variant product)",
+    "customerId": "UUID",
+    "email": "string",
+    "phoneNumber": "string (if SMS opted-in)",
+    "signedUpAt": "ISO8601",
+    "notifiedAt": "ISO8601 (null if not yet notified)",
+    "purchasedAfterNotification": "boolean",
+    "notificationChannel": "enum: EMAIL | SMS | PUSH",
+    "waitlistPosition": "number (for prioritization)"
+  }
+  ```
+labels:
+  - stock_alerts
+  - notifications
+  - inventory_management
+  - customer_engagement
+  - domain_definition

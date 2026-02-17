@@ -1,0 +1,72 @@
+item_id: returns.return_policy
+title: Return Policy and Refund Rules
+content: |
+  **Return Eligibility Window:**
+  - Standard items: 30 days from delivery
+  - Seasonal items (holiday decor): 90 days from delivery
+  - Perishables, custom items: **NOT returnable**
+
+  **Return Reasons (affects refund amount):**
+
+  1. **Defective/Damaged (merchant fault):**
+     - Refund: 100% + return shipping cost
+     - Return shipping: Prepaid label provided
+     - Restocking fee: $0
+
+  2. **Wrong Item Sent (merchant fault):**
+     - Refund: 100% + return shipping cost
+     - Return shipping: Prepaid label provided
+     - Restocking fee: $0
+
+  3. **Changed Mind (customer preference):**
+     - Refund: 100% (if item unopened/unused)
+     - Refund: 80% (if opened but resellable)
+     - Return shipping: Customer pays
+     - Restocking fee: 15% (if item requires re-packaging)
+
+  4. **Size/Fit Issue (customer preference):**
+     - Refund: 100% (if exchanged for different size)
+     - Refund: 85% (if full refund requested)
+     - Return shipping: Free (first exchange only)
+
+  **Return Process:**
+
+  ```
+  Customer initiates return (via UI or customer service)
+    → Emit ReturnRequested event
+    → Warehouse: Approve/Reject based on eligibility
+    → Emit ReturnApproved or ReturnRejected
+    → (if approved) Generate return label + RMA number
+    → Customer ships item back
+    → Warehouse receives + inspects item
+    → Emit ReturnReceived event
+    → Refund service processes refund
+    → Emit RefundIssued event
+  ```
+
+  **Refund Timelines:**
+  - Refund initiated: Within 2 business days of ReturnReceived event
+  - Refund appears in customer account: 5-10 business days (bank dependent)
+
+  **Fraudulent Returns (to detect):**
+  - Same customer >3 returns in 30 days → flag for review
+  - Item returned is not original item (serial number mismatch) → deny + ban
+  - Item damaged after delivery (customer abuse) → partial refund only
+
+  **Event Payload Example:**
+  ```json
+  {
+    "returnId": "UUID",
+    "orderId": "UUID",
+    "reason": "enum: DEFECTIVE | WRONG_ITEM | CHANGED_MIND | SIZE_ISSUE",
+    "requestedAt": "ISO8601",
+    "refundAmount": "number (cents)",
+    "restockingFee": "number (cents)",
+    "returnShippingCost": "number (cents, 0 if merchant covers)"
+  }
+  ```
+labels:
+  - returns_management
+  - refunds
+  - business_rules
+  - domain_definition

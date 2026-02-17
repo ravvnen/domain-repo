@@ -1,0 +1,97 @@
+item_id: wishlist.save_for_later
+title: Wishlist and Save for Later Features
+content: |
+  **Wishlist vs Save for Later:**
+
+  | Feature | Wishlist | Save for Later |
+  |---------|----------|----------------|
+  | **Purpose** | Long-term interest (gift ideas, future purchases) | Short-term (removed from cart but might buy soon) |
+  | **Visibility** | Shareable (registry, gift lists) | Private only |
+  | **Notifications** | Price drop alerts, back-in-stock alerts | None |
+  | **Expiration** | Never (unless customer deletes) | 90 days (auto-delete) |
+
+  **Wishlist Features:**
+
+  **1. Add to Wishlist:**
+  - **Button location:** Product page, search results, cart
+  - **Guest users:** Stored in local storage (until account created)
+  - **Registered users:** Stored in database (synced across devices)
+
+  **2. Price Drop Alerts:**
+  - **Trigger:** Product price decreases by ≥10%
+  - **Notification:** Email + push notification (if mobile app installed)
+  - **Example:** "Good news! The Blue T-Shirt you wishlisted is now $22 (was $30)"
+
+  **3. Back-in-Stock Alerts:**
+  - **Trigger:** Product goes from OUT_OF_STOCK → IN_STOCK
+  - **Notification:** Email + push notification
+  - **SLA:** Send within 1 hour of restock
+
+  **4. Wishlist Sharing (Gift Registry):**
+  - **Use case:** Birthday, wedding, baby shower
+  - **URL:** `https://example.com/wishlist/ALICE123` (public, shareable)
+  - **Features:**
+     - Friends can "reserve" items (prevents duplicate gifts)
+     - Friends can contribute toward expensive items (group gifting)
+
+  **5. Wishlist Analytics (for marketing):**
+  - **Insights:**
+     - Most wishlisted products → trending items
+     - Wishlist → Cart conversion rate (how many people eventually buy?)
+     - Average time on wishlist before purchase (e.g., 14 days)
+
+  **Save for Later (Cart → Wishlist):**
+
+  **Scenario:** Customer adds 5 items to cart, then decides to only buy 3 now
+
+  **Action:** Move 2 items to "Save for Later"
+  - Items removed from cart (no longer count toward checkout total)
+  - Items stored separately (easy to move back to cart later)
+
+  **Auto-Reminders:**
+  - **Day 7:** Email: "You left 2 items in Save for Later. Ready to buy?"
+  - **Day 14:** Email: "Last chance! Items in Save for Later might sell out soon"
+  - **Day 30:** Email: "Price drop alert! One of your saved items is now 20% off"
+
+  **Wishlist to Cart Conversion Optimization:**
+
+  **Abandoned Wishlist Recovery:**
+  - If customer adds to wishlist but doesn't buy within 30 days:
+     - Send 10% discount code: "Still thinking about that Blue T-Shirt? Here's 10% off!"
+     - Social proof: "5 other people bought this item since you wishlisted it"
+
+  **Wishlist Limits:**
+  - **Max items per wishlist:** 200 (prevents database bloat)
+  - **Max wishlists per customer:** 5 (e.g., "Christmas Gifts", "Wedding Registry", "Wish List for Me")
+
+  **Privacy Settings:**
+  - **Public:** Anyone with link can view
+  - **Private:** Only customer can view
+  - **Friends Only:** Only approved friends (requires friend connections)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "wishlistId": "UUID",
+    "customerId": "UUID",
+    "wishlistName": "string (e.g., 'Birthday Wishlist')",
+    "privacy": "enum: PUBLIC | PRIVATE | FRIENDS_ONLY",
+    "items": [
+      {
+        "productId": "UUID",
+        "addedAt": "ISO8601",
+        "priceAtAddition": "number (cents)",
+        "currentPrice": "number (cents)",
+        "priceDrop": "boolean",
+        "inStock": "boolean"
+      }
+    ],
+    "shareUrl": "string (if public)"
+  }
+  ```
+labels:
+  - wishlist
+  - save_for_later
+  - cart_management
+  - customer_engagement
+  - domain_definition

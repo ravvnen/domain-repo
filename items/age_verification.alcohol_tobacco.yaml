@@ -1,0 +1,86 @@
+item_id: age_verification.alcohol_tobacco
+title: Age Verification for Restricted Products
+content: |
+  **Age-Restricted Products:**
+
+  | Product Category | Minimum Age (USA) | Verification Required |
+  |------------------|-------------------|----------------------|
+  | Alcohol | 21+ | Yes (at checkout + delivery) |
+  | Tobacco/Vape | 21+ (federal law since 2019) | Yes (at checkout + delivery) |
+  | Knives (certain types) | 18+ | Checkout only (delivery signature not required) |
+  | Mature video games (M-rated) | 17+ (ESRB guideline, not law) | Optional (retailer policy) |
+
+  **Checkout Age Verification:**
+
+  1. **Customer enters birthdate:**
+     - Form field: MM/DD/YYYY
+     - Validation: Must be ≥21 years old from today
+     - Store in account profile (don't ask again)
+
+  2. **ID Upload (optional, for high-value orders):**
+     - Customer uploads photo of government ID (driver's license, passport)
+     - Manual review by support team (within 1 hour)
+     - If approved → mark account as age-verified (permanent)
+
+  3. **Third-Party Verification (recommended):**
+     - Use service like Jumio, Onfido, or Stripe Identity
+     - Real-time ID scan + liveness check (selfie)
+     - Cost: $0.50 - $2.00 per verification
+
+  **Delivery Age Verification (Alcohol/Tobacco):**
+
+  **Adult Signature Required:**
+  - Carrier MUST verify recipient is 21+ at delivery
+  - Check ID (driver's license, state ID, passport)
+  - If recipient <21 or refuses to show ID → return package to sender
+
+  **Carrier Requirements:**
+  - **UPS:** Adult Signature (21+) service (extra $5.50 fee)
+  - **FedEx:** Adult Signature Required (extra $6.00 fee)
+  - **USPS:** Does NOT offer adult signature → cannot ship alcohol/tobacco
+
+  **Failed Delivery (Age Verification Failed):**
+  - Carrier makes 3 delivery attempts
+  - If no one 21+ is home → customer must pick up at carrier location (with ID)
+  - After 5 days → package returned to sender
+  - Customer refunded (minus restocking fee if opened/consumed)
+
+  **State-Specific Laws (USA Alcohol Shipping):**
+
+  | State | Alcohol Shipping Allowed | Restrictions |
+  |-------|--------------------------|--------------|
+  | California | Yes | DTC license required, max 9L/shipment |
+  | New York | Yes | License required, no Sunday delivery |
+  | Texas | Yes | Consumer must be present at delivery |
+  | Utah | No | Banned (state monopoly on alcohol sales) |
+  | Pennsylvania | Beer/Wine only | No spirits |
+
+  **International Restrictions:**
+  - **Most countries:** Ban or heavily regulate alcohol imports
+  - **Example:** Cannot ship alcohol to Canada (must go through provincial liquor board)
+
+  **Non-Compliance Penalties:**
+  - Shipping to minor → $10,000 fine per incident (per ATF)
+  - Revocation of license to sell alcohol
+  - Criminal charges (in severe cases)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "requiresAgeVerification": "boolean",
+    "minimumAge": "number (e.g., 21)",
+    "verificationMethod": "enum: BIRTHDATE | ID_UPLOAD | THIRD_PARTY",
+    "verifiedAt": "ISO8601",
+    "deliverySignatureType": "enum: ADULT_21 | STANDARD | NONE",
+    "deliveryAttempts": "number",
+    "ageVerificationPassed": "boolean"
+  }
+  ```
+labels:
+  - age_verification
+  - compliance
+  - alcohol
+  - tobacco
+  - restricted_products
+  - domain_definition

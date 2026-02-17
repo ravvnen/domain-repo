@@ -1,0 +1,110 @@
+item_id: cart_recovery.abandonment_emails
+title: Cart Abandonment Recovery Email Sequence
+content: |
+  **Cart Abandonment Statistics:**
+  - Average abandonment rate: 60-80% (industry standard)
+  - **Recovery potential:** 10-15% of abandoned carts can be recovered via email
+
+  **Recovery Email Sequence:**
+
+  **Email 1: Reminder (1 hour after abandonment)**
+  - **Subject:** "You left something in your cart"
+  - **Content:**
+     - List of items in cart (with images)
+     - Subtotal
+     - CTA: "Complete Your Purchase"
+  - **No discount** (yet - don't train customers to abandon for discounts)
+
+  **Email 2: Incentive (24 hours after abandonment)**
+  - **Subject:** "Still interested? Here's 10% off your cart"
+  - **Content:**
+     - Same cart items
+     - Discount code: SAVE10 (10% off, expires in 48 hours)
+     - Social proof: "Join 10,000+ happy customers"
+  - **Urgency:** "This code expires soon!"
+
+  **Email 3: Last Chance (72 hours after abandonment)**
+  - **Subject:** "Last chance: Your cart expires tonight"
+  - **Content:**
+     - Final reminder
+     - Increased discount: 15% off (for high-value carts >$200)
+     - Scarcity: "Items selling fast - 3 left in stock!"
+  - **Fallback:** If customer still doesn't buy → move to remarketing list (Facebook/Google Ads)
+
+  **Segmentation Rules:**
+
+  | Cart Value | Email 2 Discount | Email 3 Discount |
+  |------------|------------------|------------------|
+  | <$50 | None (low value) | 10% off |
+  | $50-$199 | 10% off | 15% off |
+  | $200+ | 10% off | 15% off + free shipping |
+
+  **Exclusions (Do NOT send abandonment emails if):**
+  - Customer completed purchase (obvious!)
+  - Customer unsubscribed from marketing emails
+  - Cart contains only gift cards (low margin, not worth discount)
+  - Cart abandoned during checkout error (technical issue, not intent)
+
+  **Triggered Events:**
+  ```
+  CartAbandoned Event:
+    - Trigger: User leaves site with items in cart (inactive for 1 hour)
+    - Data: customerId, cart_items, subtotal, timestamp
+
+  Schedule:
+    - Email 1: +1 hour
+    - Email 2: +24 hours
+    - Email 3: +72 hours
+  ```
+
+  **SMS Cart Recovery (for opted-in customers):**
+  - **Timing:** 4 hours after abandonment (faster than email)
+  - **Message:** "Hey [Name]! You left [N] items in your cart. Finish checkout now: [link]"
+  - **Opt-out:** Required "Reply STOP to unsubscribe"
+
+  **Push Notification Recovery (mobile app users):**
+  - **Timing:** 2 hours after abandonment
+  - **Message:** "Don't forget! Complete your purchase and get free shipping"
+
+  **A/B Test Results (from Acme Corp):**
+  - Email 1 (no discount): 5% recovery rate
+  - Email 2 (10% discount): 8% recovery rate
+  - Email 3 (15% discount): 3% recovery rate (diminishing returns)
+  - **Best practice:** 2-email sequence (not 3) to avoid discount fatigue
+
+  **Privacy Consideration:**
+  - **Guest checkouts:** Require email entry before abandonment tracking (can't email without email!)
+  - **GDPR:** Allow customers to opt out of cart recovery emails
+
+  **Event Payload Example:**
+  ```json
+  {
+    "abandonmentId": "UUID",
+    "customerId": "UUID",
+    "cartItems": [
+      {
+        "productId": "UUID",
+        "quantity": "number",
+        "price": "number (cents)"
+      }
+    ],
+    "cartValue": "number (cents)",
+    "abandonedAt": "ISO8601",
+    "emailsSent": [
+      {
+        "emailType": "enum: REMINDER | INCENTIVE | LAST_CHANCE",
+        "sentAt": "ISO8601",
+        "opened": "boolean",
+        "clicked": "boolean"
+      }
+    ],
+    "recovered": "boolean",
+    "recoveredAt": "ISO8601 (if applicable)"
+  }
+  ```
+labels:
+  - cart_abandonment
+  - email_marketing
+  - recovery
+  - retention
+  - domain_definition

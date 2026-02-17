@@ -1,0 +1,79 @@
+item_id: preorder.management_rules
+title: Pre-Order Management Rules
+content: |
+  **Pre-Order Definition:**
+  - Product available for purchase BEFORE official release date
+  - Customer pays upfront (or reserves with deposit)
+  - Product ships on/after release date
+
+  **When to Enable Pre-Orders:**
+  - New product launch (hyped items: phones, games, sneakers)
+  - Seasonal items (e.g., Halloween costumes sold in August)
+  - Limited edition / exclusive collaborations
+
+  **Pre-Order Types:**
+
+  **1. Full Payment Pre-Order:**
+  - Customer pays 100% at checkout
+  - Payment authorized immediately, captured 3 days before ship date
+  - If product delayed → notify customer, offer cancel/wait option
+
+  **2. Deposit Pre-Order:**
+  - Customer pays 10-25% deposit
+  - Remaining balance charged 7 days before ship date
+  - If customer doesn't pay balance → forfeit deposit, order cancelled
+
+  **Pre-Order Inventory Management:**
+
+  - **Do NOT count pre-orders in available inventory**
+     - Pre-order qty tracked separately (e.g., `preorderReservations`)
+     - Prevents overselling if supplier delays shipment
+
+  - **Allocation priority:**
+     1. Pre-orders (first come, first served by pre-order timestamp)
+     2. Regular orders (after pre-order queue cleared)
+
+  **Pre-Order Cancellation Policy:**
+
+  - **Before ship date - 7 days:** Full refund
+  - **Ship date - 7 to - 3 days:** 10% cancellation fee
+  - **Ship date - 3 days to ship date:** Cannot cancel (order already processing)
+
+  **Supplier Delays (product won't arrive on time):**
+
+  1. **Notify customers immediately** (as soon as delay confirmed)
+  2. **Offer options:**
+     - Wait for new date (with 10% discount apology)
+     - Cancel with full refund
+     - Substitute with similar product (if available)
+  3. **Compensation:**
+     - Delay <2 weeks: 10% discount code
+     - Delay 2-4 weeks: 20% discount code
+     - Delay >4 weeks: Full refund + $20 store credit
+
+  **Pre-Order Pricing:**
+
+  - **Early Bird Discount:** 10-20% off MSRP for pre-orders
+  - **Price Lock:** If MSRP increases before ship date, honor pre-order price
+  - **Price Drop:** If MSRP decreases, do NOT adjust pre-order price (customer paid for early access)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "orderType": "enum: STANDARD | PREORDER",
+    "preorderDetails": {
+      "releaseDate": "ISO8601",
+      "estimatedShipDate": "ISO8601",
+      "depositAmount": "number (cents, 0 for full payment)",
+      "balanceDue": "number (cents)",
+      "balanceDueDate": "ISO8601",
+      "cancellationDeadline": "ISO8601"
+    }
+  }
+  ```
+labels:
+  - preorders
+  - product_launches
+  - inventory_management
+  - domain_definition

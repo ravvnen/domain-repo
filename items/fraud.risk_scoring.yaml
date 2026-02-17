@@ -1,0 +1,71 @@
+item_id: fraud.risk_scoring
+title: Fraud Detection Risk Scoring
+content: |
+  **Risk Score Calculation:**
+
+  Each order assigned risk score (0-100):
+  - 0-25: **LOW** (auto-approve, no review)
+  - 26-60: **MEDIUM** (manual review queue)
+  - 61-100: **HIGH** (auto-decline + notify fraud team)
+
+  **Risk Factors (additive scoring):**
+
+  1. **Shipping vs Billing Address Mismatch:** +20 points
+     - Exception: If shipping address is verified business (FedEx Office, etc.) → +0
+
+  2. **High-Value Order (>$500) from New Customer:** +15 points
+     - New customer = account <7 days old
+
+  3. **Unusual Shipping Destination:**
+     - Freight forwarder address: +25 points
+     - PO box for high-value items: +10 points
+     - International ship-to (high-risk countries): +30 points
+
+  4. **Payment Method Risk:**
+     - Prepaid debit card: +20 points
+     - Virtual credit card: +10 points
+     - Card issued in different country than IP geolocation: +25 points
+
+  5. **Behavioral Red Flags:**
+     - Multiple failed payment attempts: +15 points per failure
+     - VPN/proxy detected: +20 points
+     - Email domain is disposable (temp mail): +30 points
+
+  6. **Velocity Checks:**
+     - Same IP placed >3 orders in 24 hours: +25 points
+     - Same card used on >5 different accounts: +40 points
+
+  **Actions by Risk Level:**
+
+  - **LOW (0-25):** Proceed to fulfillment immediately
+  - **MEDIUM (26-60):**
+     - Hold order for 24 hours
+     - Email customer to verify order (phone call for >$300)
+     - If no response in 48 hours → auto-cancel
+
+  - **HIGH (61-100):**
+     - Immediately void payment authorization
+     - Cancel order
+     - Add customer to blocklist (24-hour hold)
+     - Emit `FraudSuspected` event → fraud team reviews
+
+  **Event Payload:**
+  ```json
+  {
+    "orderId": "UUID",
+    "riskScore": "number (0-100)",
+    "riskFactors": [
+      {
+        "factor": "string (e.g., 'ADDRESS_MISMATCH')",
+        "points": "number"
+      }
+    ],
+    "action": "enum: APPROVED | MANUAL_REVIEW | DECLINED",
+    "reviewedBy": "string (customerId or 'SYSTEM')"
+  }
+  ```
+labels:
+  - fraud_detection
+  - risk_management
+  - business_rules
+  - domain_definition

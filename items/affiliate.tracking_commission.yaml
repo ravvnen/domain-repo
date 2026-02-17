@@ -1,0 +1,91 @@
+item_id: affiliate.tracking_commission
+title: Affiliate Tracking and Commission Rules
+content: |
+  **Affiliate Program Overview:**
+
+  - **Commission rate:** 10% of order total (after discounts, before tax/shipping)
+  - **Cookie duration:** 30 days (last-click attribution)
+  - **Payout threshold:** $100 minimum (monthly payout)
+  - **Payout method:** PayPal, bank transfer, or store credit
+
+  **How Tracking Works:**
+
+  1. **User clicks affiliate link:**
+     - URL: `https://example.com/product?ref=AFFILIATE123`
+     - Set cookie: `affiliate_id=AFFILIATE123, expires_in=30 days`
+
+  2. **User makes purchase (within 30 days):**
+     - Read `affiliate_id` from cookie
+     - Emit `AffiliateConversion` event
+     - Tag order with affiliate ID
+
+  3. **Commission calculation:**
+     - Wait until order reaches DELIVERED state (not CREATED)
+     - If order returned → void commission
+
+  **Commission Rates (tiered by performance):**
+
+  | Tier | Monthly Sales | Commission Rate |
+  |------|---------------|-----------------|
+  | Standard | $0-$5K | 10% |
+  | Silver | $5K-$20K | 12% |
+  | Gold | $20K-$50K | 15% |
+  | Platinum | $50K+ | 18% |
+
+  **Attribution Models:**
+
+  **Default: Last-Click Attribution**
+  - Customer clicks Affiliate A → cookie set
+  - Customer clicks Affiliate B (within 30 days) → cookie overwritten
+  - Customer purchases → Affiliate B gets 100% commission
+
+  **Alternative: First-Click Attribution (not used, but mentioned)**
+  - First affiliate to refer customer gets credit (regardless of subsequent clicks)
+
+  **Multi-Touch Attribution (future enhancement):**
+  - Split commission among all affiliates in customer journey
+  - Example: Affiliate A (intro) 40%, Affiliate B (conversion) 60%
+
+  **Fraud Detection:**
+
+  - **Cookie stuffing:** Affiliate secretly sets cookie without user clicking → BAN
+  - **Self-referral:** Affiliate buying from own link → commission VOID
+  - **Fake traffic:** Bots clicking affiliate links → flag for review
+
+  **Prohibited Practices:**
+
+  - ❌ Bidding on brand keywords (e.g., "Acme Corp" on Google Ads)
+  - ❌ Email spam with affiliate links
+  - ❌ Misleading claims ("50% off!" when there's no sale)
+  - Violation → remove from program + void unpaid commissions
+
+  **Commission Clawback:**
+
+  - If customer returns order → deduct commission from affiliate's next payout
+  - If customer's payment is reversed (chargeback) → deduct commission
+
+  **Payout Schedule:**
+
+  - Calculated: 1st of each month (for prior month's DELIVERED orders)
+  - Paid: 15th of each month (if balance ≥ $100)
+  - If balance <$100 → rolls over to next month
+
+  **Event Payload Example:**
+  ```json
+  {
+    "affiliateId": "UUID",
+    "orderId": "UUID",
+    "conversionType": "enum: SALE | LEAD | CLICK",
+    "commissionAmount": "number (cents)",
+    "commissionRate": "number (decimal, e.g., 0.10 for 10%)",
+    "orderValue": "number (cents, excludes tax/shipping)",
+    "clickedAt": "ISO8601",
+    "convertedAt": "ISO8601",
+    "commissionStatus": "enum: PENDING | APPROVED | PAID | VOIDED"
+  }
+  ```
+labels:
+  - affiliate_marketing
+  - commission
+  - performance_tracking
+  - domain_definition

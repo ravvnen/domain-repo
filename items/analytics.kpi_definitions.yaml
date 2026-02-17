@@ -1,0 +1,80 @@
+item_id: analytics.kpi_definitions
+title: E-Commerce KPI Calculation Rules
+content: |
+  **Key Performance Indicators (KPIs):**
+
+  **1. Conversion Rate:**
+  ```
+  Conversion Rate = (Orders / Unique Visitors) * 100
+  ```
+  - **Benchmark:** 2-3% for e-commerce
+  - **Low conversion (<1%):** Check for UX issues, high prices, poor product photos
+
+  **2. Average Order Value (AOV):**
+  ```
+  AOV = Total Revenue / Number of Orders
+  ```
+  - **Increase AOV tactics:** Bundle deals, free shipping threshold, upsells
+
+  **3. Customer Lifetime Value (LTV):**
+  ```
+  LTV = (Average Order Value) × (Purchase Frequency) × (Customer Lifespan)
+  ```
+  - Example: AOV $100 × 3 orders/year × 5 years = $1500 LTV
+
+  **4. Cart Abandonment Rate:**
+  ```
+  Abandonment Rate = ((Carts Created - Orders) / Carts Created) * 100
+  ```
+  - **Benchmark:** 60-80% (high is normal!)
+  - **Recovery:** Send cart abandonment email after 1 hour (10-15% recovery rate)
+
+  **5. Return Rate:**
+  ```
+  Return Rate = (Returned Orders / Delivered Orders) * 100
+  ```
+  - **Benchmark:** 5-10% for general merchandise
+  - **Red flag:** >20% indicates quality issues or size guide problems
+
+  **6. Net Promoter Score (NPS):**
+  - Survey question: "How likely are you to recommend us to a friend (0-10)?"
+  - **Promoters:** 9-10 (loyal, will refer)
+  - **Passives:** 7-8 (satisfied but won't refer)
+  - **Detractors:** 0-6 (unhappy, may spread negative reviews)
+  ```
+  NPS = % Promoters - % Detractors
+  ```
+  - **Good NPS:** >50
+
+  **7. Fulfillment Speed:**
+  ```
+  Avg Fulfillment Time = Avg(OrderShipped.timestamp - OrderCreated.timestamp)
+  ```
+  - **Target:** <24 hours from order to shipment
+  - **Critical:** >48 hours indicates warehouse bottleneck
+
+  **8. Perfect Order Rate:**
+  ```
+  Perfect Order Rate = (Orders with NO issues / Total Orders) * 100
+  ```
+  - Issues = late delivery, wrong item, damaged, return requested
+  - **Target:** >95%
+
+  **Event Payload for Analytics:**
+  ```json
+  {
+    "metricName": "string (e.g., 'CONVERSION_RATE')",
+    "period": "enum: HOURLY | DAILY | WEEKLY | MONTHLY",
+    "value": "number",
+    "calculatedAt": "ISO8601",
+    "dimensions": {
+      "channel": "enum: WEB | MOBILE_APP | API",
+      "segment": "enum: VIP | LOYAL | etc."
+    }
+  }
+  ```
+labels:
+  - analytics
+  - kpis
+  - metrics
+  - domain_definition

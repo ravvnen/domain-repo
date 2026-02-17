@@ -1,0 +1,81 @@
+item_id: catalog.product_lifecycle
+title: Product Lifecycle State Machine
+content: |
+  **Product States:**
+
+  ```
+  DRAFT → PENDING_REVIEW → ACTIVE → DISCONTINUED → ARCHIVED
+            ↓
+         REJECTED (returns to DRAFT)
+  ```
+
+  **State Definitions:**
+
+  1. **DRAFT:**
+     - Product created but not yet published
+     - Visible only to internal team (admins, merchandisers)
+     - Can be edited freely (no audit trail required yet)
+
+  2. **PENDING_REVIEW:**
+     - Product submitted for approval
+     - Merchandising team reviews: photos, description, pricing, categorization
+     - Cannot be edited (must reject → DRAFT to make changes)
+
+  3. **ACTIVE:**
+     - Product is live on website, searchable, purchasable
+     - Changes require approval (e.g., price increase >10% needs manager approval)
+     - Audit trail required for all changes
+
+  4. **DISCONTINUED:**
+     - Product no longer sold, but existing inventory can be fulfilled
+     - Not searchable on website (but accessible via direct link)
+     - Often moved to clearance section with heavy discount
+
+  5. **ARCHIVED:**
+     - Product completely removed from catalog
+     - Cannot be purchased (even with direct link)
+     - Inventory set to 0, future restocks disabled
+
+  **Transition Rules:**
+
+  - DRAFT → PENDING_REVIEW: Requires complete product data (title, description, images, price, SKU)
+  - PENDING_REVIEW → ACTIVE: Requires approval from merchandiser
+  - PENDING_REVIEW → REJECTED: Merchandiser provides rejection reason → returns to DRAFT
+  - ACTIVE → DISCONTINUED: Requires inventory =0 OR manual decision (product retiring)
+  - DISCONTINUED → ARCHIVED: After 90 days with no sales OR manual decision
+
+  **Cannot Reverse:**
+  - ARCHIVED → any other state (one-way transition)
+  - Must create new product if relaunching
+
+  **Price Change Rules (for ACTIVE products):**
+
+  - Price decrease ≤30%: Auto-approve
+  - Price decrease >30%: Requires manager approval (could indicate error)
+  - Price increase ≤10%: Auto-approve
+  - Price increase >10%: Requires manager approval + notification to customers who wishlisted
+
+  **Event Payload Example:**
+  ```json
+  {
+    "productId": "UUID",
+    "sku": "string",
+    "previousState": "enum: DRAFT | PENDING_REVIEW | ACTIVE | etc.",
+    "newState": "enum",
+    "transitionedAt": "ISO8601",
+    "transitionedBy": "string (userId)",
+    "reason": "string (for REJECTED state)",
+    "changedFields": [
+      {
+        "field": "string (e.g., 'price')",
+        "oldValue": "any",
+        "newValue": "any"
+      }
+    ]
+  }
+  ```
+labels:
+  - product_catalog
+  - lifecycle_management
+  - business_rules
+  - domain_definition

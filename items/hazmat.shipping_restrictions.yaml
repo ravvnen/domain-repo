@@ -1,0 +1,85 @@
+item_id: hazmat.shipping_restrictions
+title: Hazardous Materials Shipping Rules
+content: |
+  **Hazmat Classification (DOT/IATA):**
+
+  | Class | Type | Examples | Shipping Restrictions |
+  |-------|------|----------|----------------------|
+  | Class 3 | Flammable Liquids | Perfume, nail polish, hand sanitizer | Ground only (no air) |
+  | Class 8 | Corrosives | Batteries (lithium-ion) | Special packaging, ground only |
+  | Class 9 | Miscellaneous | Dry ice, airbags | Limited quantity allowed |
+
+  **Lithium Battery Rules (most common hazmat in e-commerce):**
+
+  **1. Lithium-Ion Batteries (rechargeable):**
+  - **Watt-hours (Wh) ≤100:** Can ship via ground (UPS/FedEx Ground)
+  - **Wh >100 but ≤300:** Requires hazmat certification, ground only
+  - **Wh >300:** Cannot ship via common carrier (freight only)
+
+  **2. Lithium Metal Batteries (non-rechargeable):**
+  - **Lithium content ≤2g:** Ground shipping OK
+  - **Lithium content >2g:** Hazmat shipping required
+
+  **Packaging Requirements:**
+  - **UN-certified boxes:** Must use boxes rated for hazmat (e.g., UN 4G)
+  - **Cushioning:** Batteries cannot move inside box (prevent short circuit)
+  - **Labeling:** Hazmat diamond label + "Lithium Battery - Handle with Care"
+
+  **Prohibited Destinations:**
+  - **Air freight:** Cannot ship lithium batteries >100Wh via air (FAA regulation)
+  - **International:** Many countries ban lithium battery imports (check per destination)
+  - **PO Boxes:** USPS prohibits hazmat to PO boxes
+
+  **Carrier-Specific Rules:**
+
+  **UPS:**
+  - Max 2 lithium batteries per package
+  - Must declare hazmat at shipping (extra fee: $40)
+  - Ground service only
+
+  **FedEx:**
+  - Similar to UPS
+  - Hazmat fee: $45
+  - Requires shipper to complete hazmat training (annual certification)
+
+  **USPS:**
+  - Allows lithium batteries ≤100Wh via Ground Advantage
+  - Cheaper than UPS/FedEx but slower (7-10 days)
+
+  **Other Hazmat Products:**
+
+  - **Aerosols (hairspray, spray paint):** Ground only, max 16 oz per can
+  - **Alcohol (>24% ABV):** Cannot ship via USPS, UPS/FedEx OK (with adult signature)
+  - **Perfume/Cologne:** Ground only, max 150ml per bottle
+
+  **Auto-Detection at Checkout:**
+  ```
+  If cart contains hazmat SKU:
+    1. Remove air/expedited shipping options (show ground only)
+    2. Add hazmat surcharge ($30-$50)
+    3. Show warning: "This order contains hazardous materials and cannot be shipped via air"
+  ```
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "containsHazmat": "boolean",
+    "hazmatItems": [
+      {
+        "sku": "string",
+        "hazmatClass": "enum: CLASS_3 | CLASS_8 | CLASS_9",
+        "unNumber": "string (e.g., 'UN3481' for lithium batteries)",
+        "properShippingName": "string"
+      }
+    ],
+    "requiredCarrier": "enum: GROUND_ONLY | FREIGHT",
+    "hazmatFee": "number (cents)"
+  }
+  ```
+labels:
+  - hazmat
+  - shipping_restrictions
+  - compliance
+  - safety
+  - domain_definition

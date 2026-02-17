@@ -1,0 +1,85 @@
+item_id: b2b.wholesale_ordering
+title: B2B Wholesale Ordering Rules
+content: |
+  **B2B vs B2C Differences:**
+
+  | Feature | B2C (Retail) | B2B (Wholesale) |
+  |---------|--------------|-----------------|
+  | Pricing | Fixed (dynamic promotions) | Tiered by volume, negotiated |
+  | Payment | Card at checkout | Net 30, Net 60 (invoice) |
+  | Minimum Order | None (or $10) | $500 minimum |
+  | Discounts | Promotional codes | Volume discounts (10% for 100+ units) |
+  | Tax | Collected at checkout | Tax-exempt (resale certificate) |
+  | Shipping | Standard, expedited | LTL freight, pallet shipments |
+
+  **B2B Account Approval Process:**
+
+  1. **Application:**
+     - Business provides: Tax ID, resale certificate, credit references
+     - Credit check performed (D&B score)
+
+  2. **Approval/Rejection:**
+     - Auto-approve: D&B score >70, annual revenue >$1M
+     - Manual review: D&B score 50-70
+     - Auto-reject: D&B score <50
+
+  3. **Credit Limit:**
+     - Based on D&B score + revenue
+     - Example: $1M revenue → $50K credit limit
+
+  **B2B Pricing Tiers:**
+
+  | Tier | Qualification | Discount |
+  |------|---------------|----------|
+  | Tier 1 | $500-$2499/order | 10% off MSRP |
+  | Tier 2 | $2500-$9999/order | 20% off MSRP |
+  | Tier 3 | $10,000+/order | 30% off MSRP |
+  | VIP (negotiated) | $100K+ annual | Custom pricing (35-50% off) |
+
+  **Payment Terms:**
+
+  - **Net 30:** Payment due 30 days after invoice date
+  - **Net 60:** Payment due 60 days after invoice date (for established customers)
+  - **2/10 Net 30:** 2% discount if paid within 10 days, otherwise Net 30
+
+  **Late Payment:**
+  - 1-15 days late: Email reminder (no penalty)
+  - 16-30 days late: 1.5% late fee per month
+  - 31+ days late: Account suspended (no new orders until balance paid)
+
+  **Shipping:**
+
+  - **Standard (small orders <$10K):** UPS/FedEx Ground
+  - **LTL Freight (large orders >$10K):** Pallet shipments, freight quotes
+  - **FOB (Free On Board) terms:**
+     - **FOB Origin:** Customer pays shipping, assumes risk once shipped
+     - **FOB Destination:** Seller pays shipping, assumes risk until delivered
+
+  **Returns (more restrictive than B2C):**
+
+  - **Defective items:** 100% refund + return shipping covered
+  - **Wrong item sent:** 100% refund + return shipping covered
+  - **Buyer's remorse:** 15% restocking fee + buyer pays return shipping
+  - **No returns on:**
+     - Custom/personalized items
+     - Opened/used items
+     - Clearance items
+
+  **Event Payload Example:**
+  ```json
+  {
+    "orderId": "UUID",
+    "accountType": "enum: B2B | B2C",
+    "businessId": "UUID",
+    "paymentTerms": "enum: NET_30 | NET_60 | DUE_ON_RECEIPT",
+    "pricingTier": "enum: TIER_1 | TIER_2 | TIER_3 | VIP",
+    "creditLimit": "number (cents)",
+    "currentBalance": "number (cents, outstanding invoices)",
+    "taxExempt": "boolean"
+  }
+  ```
+labels:
+  - b2b
+  - wholesale
+  - enterprise_sales
+  - domain_definition

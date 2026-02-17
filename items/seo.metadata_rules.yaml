@@ -1,0 +1,161 @@
+item_id: seo.metadata_rules
+title: SEO Metadata Standards
+content: |
+  **Page Title Tags:**
+
+  **Format:** `[Product Name] | [Category] | [Brand Name]`
+
+  **Example:** `Blue Cotton V-Neck T-Shirt | Men's Clothing | Acme Apparel`
+
+  **Rules:**
+  - **Length:** 50-60 characters (Google truncates at ~60)
+  - **Uniqueness:** Every page must have unique title (no duplicates)
+  - **Keywords:** Primary keyword in first 5 words
+  - **Brand:** Include at end (helps with branded searches)
+
+  **Meta Descriptions:**
+
+  **Format:** Compelling 1-2 sentence summary with call-to-action
+
+  **Example:**
+  ```
+  Shop our premium blue cotton v-neck t-shirt. Soft, breathable fabric perfect for everyday wear. Free shipping on orders over $50. Order now!
+  ```
+
+  **Rules:**
+  - **Length:** 150-160 characters (Google truncates at ~160)
+  - **Uniqueness:** Every page must have unique description
+  - **CTA:** Include action word (e.g., "Shop now", "Buy today", "Discover")
+  - **Benefits:** Highlight key selling points (e.g., "Free shipping", "30-day returns")
+
+  **URL Structure (SEO-Friendly):**
+
+  **Good:**
+  - `/products/blue-cotton-vneck-tshirt`
+  - `/categories/mens-clothing/tshirts`
+  - `/blog/how-to-style-vneck-tshirts`
+
+  **Bad:**
+  - `/product.php?id=12345` (ugly, no keywords)
+  - `/p/bcvt` (too short, not descriptive)
+  - `/products/blue-cotton-vneck-tshirt-for-men-100%-organic-free-shipping` (too long!)
+
+  **Rules:**
+  - **Length:** <75 characters
+  - **Lowercase:** All lowercase (avoid mixed case)
+  - **Hyphens:** Use hyphens (`-`), not underscores (`_`)
+  - **Keywords:** Include primary keyword
+  - **No dates:** Avoid dates in URLs (makes content seem stale)
+
+  **Canonical Tags (Prevent Duplicate Content):**
+
+  **Problem:** Same product accessible via multiple URLs:
+  - `/products/blue-tshirt`
+  - `/products/blue-tshirt?color=blue`
+  - `/categories/mens-clothing/blue-tshirt`
+
+  **Solution:** Set canonical URL to main version:
+  ```html
+  <link rel="canonical" href="https://example.com/products/blue-tshirt" />
+  ```
+
+  **Structured Data (Schema.org):**
+
+  **Product Schema (JSON-LD):**
+  ```json
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "Blue Cotton V-Neck T-Shirt",
+    "image": "https://example.com/images/blue-tshirt.jpg",
+    "description": "Soft, breathable cotton v-neck t-shirt",
+    "sku": "BCVT-001",
+    "brand": {
+      "@type": "Brand",
+      "name": "Acme Apparel"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": "https://example.com/products/blue-tshirt",
+      "priceCurrency": "USD",
+      "price": "29.99",
+      "availability": "https://schema.org/InStock"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.5",
+      "reviewCount": "127"
+    }
+  }
+  ```
+
+  **Breadcrumb Schema:**
+  ```json
+  {
+    "@context": "https://schema.org/",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://example.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Men's Clothing",
+        "item": "https://example.com/categories/mens-clothing"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "T-Shirts",
+        "item": "https://example.com/categories/mens-clothing/tshirts"
+      }
+    ]
+  }
+  ```
+
+  **Sitemap XML:**
+  - **Frequency:** Update daily (for product pages)
+  - **Priority:**
+     - Homepage: 1.0
+     - Category pages: 0.8
+     - Product pages: 0.6
+     - Blog posts: 0.4
+  - **Submit to:** Google Search Console, Bing Webmaster Tools
+
+  **Robots.txt:**
+  ```
+  User-agent: *
+  Disallow: /checkout
+  Disallow: /account
+  Disallow: /cart
+  Allow: /products
+  Allow: /categories
+
+  Sitemap: https://example.com/sitemap.xml
+  ```
+
+  **Event Payload Example:**
+  ```json
+  {
+    "pageUrl": "string",
+    "pageType": "enum: PRODUCT | CATEGORY | HOMEPAGE | BLOG",
+    "seoMetadata": {
+      "title": "string (50-60 chars)",
+      "description": "string (150-160 chars)",
+      "canonicalUrl": "string",
+      "structuredData": "object (schema.org JSON-LD)",
+      "lastUpdated": "ISO8601"
+    },
+    "seoScore": "number (0-100, automated audit score)"
+  }
+  ```
+labels:
+  - seo
+  - metadata
+  - search_optimization
+  - structured_data
+  - domain_definition

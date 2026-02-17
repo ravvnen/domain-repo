@@ -1,0 +1,116 @@
+item_id: chargebacks.dispute_handling
+title: Chargeback and Dispute Handling
+content: |
+  **Chargeback Definition:**
+  - Customer disputes charge with their bank (NOT with merchant)
+  - Bank reverses payment → merchant loses revenue + pays chargeback fee ($15-$25)
+
+  **Common Chargeback Reasons:**
+
+  | Reason Code | Description | Prevention |
+  |-------------|-------------|------------|
+  | Fraud (10.4) | "I didn't make this purchase" | Require CVV, AVS check, 3D Secure |
+  | Not Received (13.1) | "I never got my order" | Provide tracking, signature confirmation |
+  | Not as Described (13.3) | "Product was different" | Accurate photos, detailed descriptions |
+  | Duplicate Charge (12.6) | "You charged me twice" | Idempotency keys, charge de-duplication |
+  | Subscription Cancelled (13.7) | "I cancelled but still charged" | Clear cancellation confirmation |
+
+  **Chargeback Process:**
+
+  1. **Notification (Day 0):**
+     - Payment processor (Stripe, PayPal) notifies merchant
+     - Funds immediately deducted from merchant account
+     - Merchant has 7-14 days to respond (varies by card network)
+
+  2. **Evidence Gathering (Day 1-5):**
+     - Collect proof of delivery:
+        - Tracking number showing "Delivered"
+        - Signature confirmation (if applicable)
+        - IP address of order placement
+        - AVS/CVV match results
+     - Collect proof of product/service:
+        - Order details (screenshots)
+        - Customer communications (emails)
+        - Terms of service acceptance timestamp
+
+  3. **Dispute Submission (Day 6-7):**
+     - Submit evidence to payment processor
+     - Write compelling rebuttal letter:
+        ```
+        Subject: Rebuttal for Chargeback [Case ID]
+
+        Dear [Card Network],
+
+        We are contesting this chargeback for the following reasons:
+
+        1. Order was delivered on [Date] at [Time] to customer's address: [Address]
+        2. Tracking number [Number] shows "Signed by [Name]"
+        3. Customer did not contact us for a return or refund before filing chargeback
+        4. Attached: Tracking confirmation, delivery photo, order receipt
+
+        We respectfully request this chargeback be reversed in our favor.
+
+        Sincerely,
+        [Merchant Name]
+        ```
+
+  4. **Bank Review (Day 8-60):**
+     - Card-issuing bank reviews evidence
+     - Decision: Merchant wins OR customer wins
+
+  5. **Outcome (Day 60-90):**
+     - **Merchant wins:** Funds returned + chargeback fee refunded
+     - **Customer wins:** Merchant loses funds + keeps chargeback fee (ouch!)
+
+  **Win Rates (Industry Average):**
+  - Fraud chargebacks: 20% merchant win rate (hard to fight)
+  - Not Received: 60% merchant win rate (if tracking shows delivered)
+  - Not as Described: 40% merchant win rate (subjective)
+
+  **Chargeback Prevention:**
+
+  **1. Fraud Detection (before shipment):**
+  - High-risk indicators:
+     - Billing ≠ shipping address
+     - First-time customer with high-value order (>$500)
+     - VPN/proxy detected
+  - Action: Contact customer to verify (phone call)
+
+  **2. Clear Descriptors:**
+  - Credit card statement shows: "ACME CORP - ORDER #12345"
+     - NOT "XYZ PAYMENT PROCESSOR" (customer won't recognize)
+
+  **3. Excellent Customer Service:**
+  - Make refunds easy (customers prefer refunds over chargebacks)
+  - Respond to complaints within 24 hours
+
+  **Chargeback Thresholds (Stripe, PayPal):**
+  - **Warning:** Chargeback rate >0.5% (chargebacks / total transactions)
+  - **Penalty:** Chargeback rate >1.0% → account review, possible termination
+  - **Visa/Mastercard Monitoring Program:** >100 chargebacks + >0.9% rate → entered into monitoring (extra fees)
+
+  **High Chargeback Customers:**
+  - If customer files >2 chargebacks → ban from placing future orders
+  - Add to blocklist (email, address, card fingerprint)
+
+  **Event Payload Example:**
+  ```json
+  {
+    "chargebackId": "UUID",
+    "orderId": "UUID",
+    "customerId": "UUID",
+    "reason": "enum: FRAUD | NOT_RECEIVED | NOT_AS_DESCRIBED | DUPLICATE | SUBSCRIPTION",
+    "amount": "number (cents)",
+    "chargebackFee": "number (cents, e.g., 1500 for $15)",
+    "filedAt": "ISO8601",
+    "evidenceSubmittedAt": "ISO8601",
+    "outcome": "enum: PENDING | MERCHANT_WON | CUSTOMER_WON",
+    "resolvedAt": "ISO8601"
+  }
+  ```
+labels:
+  - chargebacks
+  - disputes
+  - fraud_prevention
+  - payment_processing
+  - domain_definition
